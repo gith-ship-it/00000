@@ -34,34 +34,14 @@ export async function graphAPIRequest(endpoint, options = {}) {
 
   const token = accessToken;
 
-  // For POST/PUT/PATCH requests, send parameters in body; for GET, use query string
-  let url;
-  let fetchOptions = { method };
+  const queryParams = new URLSearchParams({
+    access_token: token,
+    ...params
+  });
 
-  const bodyMethods = ['POST', 'PUT', 'PATCH'];
+  const url = `${FB_GRAPH_API_BASE}/${endpoint}?${queryParams}`;
 
-  if (bodyMethods.includes(method)) {
-    // Access token in query, other params in body
-    const queryParams = new URLSearchParams({ access_token: token });
-    url = `${FB_GRAPH_API_BASE}/${endpoint}?${queryParams}`;
-
-    // Send other parameters in the request body
-    const bodyParams = new URLSearchParams(params);
-    fetchOptions.headers = {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    fetchOptions.body = bodyParams;
-  } else {
-    // GET request - all params in query string
-    // Place params first, then access_token to ensure token takes precedence
-    const queryParams = new URLSearchParams({
-      ...params,
-      access_token: token
-    });
-    url = `${FB_GRAPH_API_BASE}/${endpoint}?${queryParams}`;
-  }
-
-  const response = await fetch(url, fetchOptions);
+  const response = await fetch(url, { method });
 
   if (!response.ok) {
     const errorData = await response.json();
