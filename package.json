@@ -9,7 +9,7 @@
     "build:dev": "rollup -c --environment NODE_ENV:development",
     "build:prod": "rollup -c --environment NODE_ENV:production",
     "build:extension": "npm run build:prod && npm run copy:extension",
-    "copy:extension": "cp dist/fbacc-plugin.min.js extension/ && cp dist/fbacc-plugin.min.js.map extension/ 2>/dev/null || true",
+    "copy:extension": "node scripts/copy-extension.js",
     "watch": "rollup -c --watch",
     "lint": "eslint src/**/*.js",
     "format": "prettier --write \"src/**/*.js\"",

@@ -21,6 +21,9 @@ try {
 
 // Function to create a simple SVG icon
 function createSVGIcon(size) {
+  const borderRadius = (size * 0.2).toFixed(2);
+  const fontSize = (size * 0.45).toFixed(2);
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -29,8 +32,8 @@ function createSVGIcon(size) {
       <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect width="${size}" height="${size}" rx="${size * 0.2}" fill="url(#grad)"/>
-  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${size * 0.45}" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">FB</text>
+  <rect width="${size}" height="${size}" rx="${borderRadius}" fill="url(#grad)"/>
+  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">FB</text>
 </svg>`;
 }
 

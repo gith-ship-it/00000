@@ -8,8 +8,8 @@
     "scripting"
   ],
   "host_permissions": [
-    "*://*.facebook.com/*",
-    "*://*.business.facebook.com/*"
+    "https://*.facebook.com/*",
+    "https://*.business.facebook.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -30,17 +30,17 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.facebook.com/*",
-        "*://*.business.facebook.com/*"
+        "https://*.facebook.com/*",
+        "https://*.business.facebook.com/*"
       ],
-      "js": ["fbacc-plugin.min.js"],
+      "js": ["loader.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": ["fbacc-plugin.min.js"],
-      "matches": ["*://*.facebook.com/*", "*://*.business.facebook.com/*"]
+      "matches": ["https://*.facebook.com/*", "https://*.business.facebook.com/*"]
     }
   ]
 }
