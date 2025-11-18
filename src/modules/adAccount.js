@@ -3,7 +3,7 @@
  * Handles operations related to Facebook ad accounts
  */
 
-import { graphAPIRequest, graphQLRequest } from '../core/api.js';
+import { graphAPIRequest, graphQLRequest, batchGraphAPIRequests } from '../core/api.js';
 import { CONFIG } from '../core/config.js';
 /**
  * Appeal/request review for ad account
@@ -144,35 +144,44 @@ export async function getAdAccountDetails(accountId, accessToken) {
       'timezone_name'
     ];
 
-    // Try to get basic account details first
-    let data = await graphAPIRequest(`act_${accountId}`, {
-      params: {
-        fields: basicFields.join(',')
-      },
-      accessToken
-    });
-
-    // Try to get additional fields if permissions allow
-    // These fields require ads_management or business_management permissions
+    // Sensitive fields that require ads_management or business_management permissions
     const sensitiveFields = [
       'amount_spent',
       'balance',
       'funding_source_details'
     ];
 
-    try {
-      const additionalData = await graphAPIRequest(`act_${accountId}`, {
-        params: {
-          fields: sensitiveFields.join(',')
-        },
-        accessToken
-      });
+    // Use batch API to fetch both sets of fields in a single network request
+    const batchRequests = [
+      {
+        method: 'GET',
+        endpoint: `act_${accountId}`,
+        params: { fields: basicFields.join(',') }
+      },
+      {
+        method: 'GET',
+        endpoint: `act_${accountId}`,
+        params: { fields: sensitiveFields.join(',') }
+      }
+    ];
 
-      // Merge additional fields if successful
-      data = { ...data, ...additionalData };
-    } catch (permissionError) {
+    const results = await batchGraphAPIRequests(batchRequests, accessToken);
+
+    // Process basic fields (should always succeed)
+    if (!results[0].success) {
+      throw new Error(results[0].error?.error?.message || 'Failed to fetch basic account details');
+    }
+
+    let data = results[0].data;
+
+    // Process sensitive fields (may fail due to permissions)
+    if (results[1].success) {
+      // Merge sensitive fields if successful
+      data = { ...data, ...results[1].data };
+    } else {
       // Log warning but don't fail - these fields are optional
-      console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', permissionError.message);
+      const errorMsg = results[1].error?.error?.message || 'Permission denied';
+      console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', errorMsg);
     }
 
     return {
