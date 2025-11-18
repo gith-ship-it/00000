@@ -52,7 +52,8 @@ export async function addCreditCardToAccount(
       CONFIG.GRAPHQL_DOC_IDS.ADD_CREDIT_CARD,
       variables,
       'useFBAAddCreditCardMutation',
-      accessToken
+      accessToken,
+      { paymentAccountID: adAccountId }
     );
 
     return {

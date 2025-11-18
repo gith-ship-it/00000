@@ -34,11 +34,13 @@ export async function graphAPIRequest(endpoint, options = {}) {
 
   const token = accessToken;
 
-  // For POST requests, send parameters in body; for GET, use query string
+  // For POST/PUT/PATCH requests, send parameters in body; for GET, use query string
   let url;
   let fetchOptions = { method };
 
-  if (method === 'POST') {
+  const bodyMethods = ['POST', 'PUT', 'PATCH'];
+
+  if (bodyMethods.includes(method)) {
     // Access token in query, other params in body
     const queryParams = new URLSearchParams({ access_token: token });
     url = `${FB_GRAPH_API_BASE}/${endpoint}?${queryParams}`;
@@ -51,9 +53,10 @@ export async function graphAPIRequest(endpoint, options = {}) {
     fetchOptions.body = bodyParams;
   } else {
     // GET request - all params in query string
+    // Place params first, then access_token to ensure token takes precedence
     const queryParams = new URLSearchParams({
-      access_token: token,
-      ...params
+      ...params,
+      access_token: token
     });
     url = `${FB_GRAPH_API_BASE}/${endpoint}?${queryParams}`;
   }
@@ -74,9 +77,10 @@ export async function graphAPIRequest(endpoint, options = {}) {
  * @param {Object} variables - GraphQL variables
  * @param {string} friendlyName - API friendly name
  * @param {string} accessToken - Access token (optional)
+ * @param {Object} extraParams - Optional additional parameters for the request body
  * @returns {Promise<Object>} API response
  */
-export async function graphQLRequest(docId, variables, friendlyName, accessToken = null) {
+export async function graphQLRequest(docId, variables, friendlyName, accessToken = null, extraParams = {}) {
   if (!accessToken) {
     throw new Error('Access token is required. Please pass it explicitly.');
   }
@@ -85,6 +89,12 @@ export async function graphQLRequest(docId, variables, friendlyName, accessToken
 
   const urlencoded = new URLSearchParams();
   urlencoded.append('access_token', token);
+
+  // Add any extra parameters first (e.g., paymentAccountID)
+  for (const [key, value] of Object.entries(extraParams)) {
+    urlencoded.append(key, value);
+  }
+
   urlencoded.append('doc_id', docId);
   urlencoded.append('variables', JSON.stringify(variables));
   urlencoded.append('fb_api_req_friendly_name', friendlyName);
