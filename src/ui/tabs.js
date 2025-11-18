@@ -48,7 +48,7 @@ export function clearTab(tabId) {
   const element = document.getElementById(tabId);
   if (element) {
     // Safe: clearing content, no XSS risk
-    element.innerHTML = '';
+    element.textContent = '';
   }
 }
 
@@ -68,9 +68,7 @@ export function setTab(content, tabId) {
   }
 
   // Clear existing content safely
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
+  element.textContent = '';
 
   if (content instanceof Node) {
     element.appendChild(content);
@@ -82,11 +80,13 @@ export function setTab(content, tabId) {
 /**
  * Create a button element
  * @param {string} text - Button text (will be escaped)
- * @param {Function} onClick - Click handler function (required for security)
+ * @param {string} dataAction - Data attribute value for event delegation
  * @param {Object} options - Button options
  * @returns {HTMLButtonElement} Button DOM element
+ *
+ * SECURITY: Returns a DOM element with safe textContent. Use data-action for event delegation.
  */
-export function createButton(text, onClick, options = {}) {
+export function createButton(text, dataAction, options = {}) {
   const {
     style = 'primary',
     size = 'medium',
@@ -115,11 +115,9 @@ export function createButton(text, onClick, options = {}) {
   button.style.cssText = buttonStyle;
   button.className = className;
 
-  // Only accept function handlers for security (no string onclick attributes)
-  if (typeof onClick === 'function') {
-    button.onclick = onClick;
-  } else if (onClick !== undefined) {
-    console.warn('createButton: onClick must be a function for security. String onclick attributes are not supported.');
+  // Set data-action attribute for event delegation
+  if (dataAction) {
+    button.setAttribute('data-action', dataAction);
   }
 
   return button;

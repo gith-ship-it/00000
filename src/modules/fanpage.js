@@ -3,8 +3,7 @@
  * Handles operations related to Facebook pages
  */
 
-import { postFormData } from '../utils/http.js';
-
+import { graphAPIRequest, graphQLRequest } from '../core/api.js';
 import { CONFIG } from '../core/config.js';
 /**
  * Appeal/request review for Facebook page
@@ -14,9 +13,6 @@ import { CONFIG } from '../core/config.js';
  */
 export async function appealFanpage(pageId, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         page_id: pageId,
@@ -25,12 +21,12 @@ export async function appealFanpage(pageId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'useAdAccountALRAppealMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.PAGE_APPEAL);
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.PAGE_APPEAL,
+      variables,
+      'useAdAccountALRAppealMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -56,9 +52,6 @@ export async function appealFanpage(pageId, accessToken) {
  */
 export async function deleteFanpage(pageId, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         page_id: pageId,
@@ -66,12 +59,12 @@ export async function deleteFanpage(pageId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'usePagesCometDeletePageMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.PAGE_DELETE);
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.PAGE_DELETE,
+      variables,
+      'usePagesCometDeletePageMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -97,9 +90,6 @@ export async function deleteFanpage(pageId, accessToken) {
  */
 export async function unhideFanpage(pageId, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         page_id: pageId,
@@ -108,12 +98,12 @@ export async function unhideFanpage(pageId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'usePagesCometEditPageVisibilityMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.PAGE_UNHIDE);
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.PAGE_UNHIDE,
+      variables,
+      'usePagesCometEditPageVisibilityMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -149,14 +139,12 @@ export async function getPageDetails(pageId, accessToken) {
       'is_webhooks_subscribed'
     ];
 
-    const url = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/${pageId}?fields=${fields.join(',')}&access_token=${accessToken}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
+    const data = await graphAPIRequest(pageId, {
+      params: {
+        fields: fields.join(',')
+      },
+      accessToken
+    });
 
     return {
       success: true,

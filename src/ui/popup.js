@@ -53,13 +53,10 @@ export function initPluginPopup() {
 
   // Create close button
   const closeButton = document.createElement('button');
+  closeButton.setAttribute('data-action', 'close');
   closeButton.style.cssText = 'background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;';
   closeButton.textContent = '×';
-  closeButton.onclick = () => {
-    if (window.mainclose) {
-      window.mainclose();
-    }
-  };
+  closeButton.addEventListener('click', mainclose);
 
   headerInner.appendChild(title);
   headerInner.appendChild(closeButton);

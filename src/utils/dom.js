@@ -4,47 +4,11 @@
  */
 
 /**
- * Append content to a tab/element
- * @param {HTMLElement|Node} content - DOM element or node to append
- * @param {string} targetId - Target element ID
- *
- * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
- * Do not pass HTML strings. Use createElement() to build your content safely.
- */
-export function appendTab(content, targetId) {
-  const element = document.getElementById(targetId);
-  if (!element) {
-    console.warn(`Element with ID "${targetId}" not found`);
-    return;
-  }
-
-  if (content instanceof Node) {
-    element.appendChild(content);
-  } else {
-    console.error('appendTab: content must be a DOM Node for security. HTML strings are not supported.');
-  }
-}
-
-/**
- * Append content with additional processing
- * @param {HTMLElement|Node} content - DOM element or node to append
- * @param {string} targetId - Target element ID
- * @param {Function} callback - Optional callback after append
- *
- * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
- */
-export function appendTabPlus(content, targetId, callback) {
-  appendTab(content, targetId);
-  if (callback && typeof callback === 'function') {
-    callback();
-  }
-}
-
-/**
  * Create and show a modal/popup
  * @param {string} title - Popup title (will be safely escaped)
  * @param {HTMLElement|Node} content - DOM element or node for popup content
  * @param {Object} options - Popup options
+ * @returns {HTMLElement} The popup element for direct event listener attachment
  *
  * SECURITY: This function only accepts DOM elements/nodes for content to prevent XSS attacks.
  * Build your content using createElement() and DOM methods, not HTML strings.
@@ -92,15 +56,10 @@ export function showPopup(title, content, options = {}) {
 
   // Create close button
   const closeButton = document.createElement('button');
+  closeButton.setAttribute('data-action', 'close-popup');
   closeButton.style.cssText = 'background: none; border: none; font-size: 24px; cursor: pointer;';
   closeButton.textContent = '×';
-  closeButton.onclick = () => {
-    if (window.hidePluginPopup) {
-      window.hidePluginPopup();
-    } else {
-      hidePopup();
-    }
-  };
+  closeButton.addEventListener('click', hidePopup);
 
   // Create content container
   const contentContainer = document.createElement('div');
@@ -134,10 +93,12 @@ export function showPopup(title, content, options = {}) {
     background: rgba(0,0,0,0.5);
     z-index: 9999;
   `;
-  overlay.onclick = hidePopup;
+  overlay.addEventListener('click', hidePopup);
 
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
+
+  return popup;
 }
 
 /**
@@ -162,8 +123,6 @@ export function togglePopup() {
 }
 
 export default {
-  appendTab,
-  appendTabPlus,
   showPopup,
   hidePopup,
   togglePopup

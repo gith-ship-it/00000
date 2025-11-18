@@ -3,7 +3,7 @@
  * Handles operations related to Facebook Business Manager
  */
 
-import { postFormData } from '../utils/http.js';
+import { graphQLRequest } from '../core/api.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
 import { CONFIG } from '../core/config.js';
 
@@ -15,9 +15,6 @@ import { CONFIG } from '../core/config.js';
  */
 export async function addBusinessManager(bmName, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         name: bmName,
@@ -27,12 +24,12 @@ export async function addBusinessManager(bmName, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'BusinessManagerCreateMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_CREATE); // Example doc_id
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.BM_CREATE,
+      variables,
+      'BusinessManagerCreateMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -60,9 +57,6 @@ export async function addBusinessManager(bmName, accessToken) {
  */
 export async function addUserToBusinessManager(bmId, userId, role, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         business_id: bmId,
@@ -72,12 +66,12 @@ export async function addUserToBusinessManager(bmId, userId, role, accessToken) 
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'BusinessAddUserMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_ADD_USER); // Example doc_id
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.BM_ADD_USER,
+      variables,
+      'BusinessAddUserMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -104,9 +98,6 @@ export async function addUserToBusinessManager(bmId, userId, role, accessToken) 
  */
 export async function addAdAccountToBusinessManager(bmId, adAccountId, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         business_id: bmId,
@@ -116,12 +107,12 @@ export async function addAdAccountToBusinessManager(bmId, adAccountId, accessTok
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'BusinessAddAdAccountMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_ADD_AD_ACCOUNT); // Example doc_id
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.BM_ADD_AD_ACCOUNT,
+      variables,
+      'BusinessAddAdAccountMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -148,9 +139,6 @@ export async function addAdAccountToBusinessManager(bmId, adAccountId, accessTok
  */
 export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-
     const variables = {
       input: {
         business_id: bmId,
@@ -160,12 +148,12 @@ export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'BusinessRequestAdAccountAccessMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_REQUEST_AD_ACCOUNT); // Example doc_id
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
+    const response = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.BM_REQUEST_AD_ACCOUNT,
+      variables,
+      'BusinessRequestAdAccountAccessMutation',
+      accessToken
+    );
 
     return {
       success: true,
@@ -213,24 +201,16 @@ export function showAddBusinessManagerForm() {
   buttonContainer.style.textAlign = 'right';
 
   const cancelButton = document.createElement('button');
+  cancelButton.setAttribute('data-action', 'cancel');
   cancelButton.textContent = 'Cancel';
   cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
-  cancelButton.onclick = () => {
-    if (window.hidePluginPopup) {
-      window.hidePluginPopup();
-    } else {
-      hidePopup();
-    }
-  };
+  cancelButton.addEventListener('click', hidePopup);
 
   const createButton = document.createElement('button');
+  createButton.setAttribute('data-action', 'submit');
   createButton.textContent = 'Create BM';
   createButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
-  createButton.onclick = () => {
-    if (window.processAddBusinessManager) {
-      window.processAddBusinessManager();
-    }
-  };
+  createButton.addEventListener('click', processAddBusinessManager);
 
   buttonContainer.appendChild(cancelButton);
   buttonContainer.appendChild(createButton);
