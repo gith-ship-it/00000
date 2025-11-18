@@ -8,10 +8,13 @@
     "build": "rollup -c",
     "build:dev": "rollup -c --environment NODE_ENV:development",
     "build:prod": "rollup -c --environment NODE_ENV:production",
+    "build:extension": "npm run build:prod && npm run copy:extension",
+    "copy:extension": "node scripts/copy-extension.js",
     "watch": "rollup -c --watch",
     "lint": "eslint src/**/*.js",
     "format": "prettier --write \"src/**/*.js\"",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "clean:all": "rimraf dist extension/fbacc-plugin.min.js extension/fbacc-plugin.min.js.map"
   },
   "keywords": [
     "facebook",

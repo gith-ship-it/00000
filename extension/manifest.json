@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Facebook Ads Manager Plugin",
+  "version": "6.4.0",
+  "description": "A powerful plugin for managing Facebook Ads Manager operations including ad accounts, pages, business managers, and payment methods.",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.facebook.com/*",
+    "https://*.business.facebook.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.svg",
+      "32": "icons/icon32.svg",
+      "48": "icons/icon48.svg",
+      "128": "icons/icon128.svg"
+    },
+    "default_title": "Facebook Ads Manager Plugin"
+  },
+  "icons": {
+    "16": "icons/icon16.svg",
+    "32": "icons/icon32.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon128.svg"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.facebook.com/*",
+        "https://*.business.facebook.com/*"
+      ],
+      "js": ["loader.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["fbacc-plugin.min.js"],
+      "matches": ["https://*.facebook.com/*", "https://*.business.facebook.com/*"]
+    }
+  ]
+}
