@@ -5,13 +5,23 @@
 
 /**
  * Append content to a tab/element
- * @param {string} content - HTML content to append
+ * @param {string|HTMLElement} content - Content to append (HTML string or DOM element)
  * @param {string} targetId - Target element ID
  */
 export function appendTab(content, targetId) {
   const element = document.getElementById(targetId);
   if (element) {
-    element.innerHTML += content;
+    if (typeof content === 'string') {
+      // Create a temporary container to parse HTML safely
+      const temp = document.createElement('div');
+      temp.innerHTML = content;
+      // Append all child nodes
+      while (temp.firstChild) {
+        element.appendChild(temp.firstChild);
+      }
+    } else if (content instanceof HTMLElement) {
+      element.appendChild(content);
+    }
   }
 }
 
@@ -30,8 +40,8 @@ export function appendTabPlus(content, targetId, callback) {
 
 /**
  * Create and show a modal/popup
- * @param {string} title - Popup title
- * @param {string} content - Popup content (HTML)
+ * @param {string} title - Popup title (will be escaped)
+ * @param {string} content - Popup content (HTML - must be sanitized by caller if contains user data)
  * @param {Object} options - Popup options
  */
 export function showPopup(title, content, options = {}) {
@@ -62,15 +72,42 @@ export function showPopup(title, content, options = {}) {
     overflow: auto;
   `;
 
-  popup.innerHTML = `
-    <div style="padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3 style="margin: 0;">${title}</h3>
-        <button onclick="window.hidePluginPopup()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
-      </div>
-      <div>${content}</div>
-    </div>
-  `;
+  // Create main container
+  const mainContainer = document.createElement('div');
+  mainContainer.style.padding = '20px';
+
+  // Create header container
+  const headerContainer = document.createElement('div');
+  headerContainer.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;';
+
+  // Create title element (use textContent for XSS protection)
+  const titleElement = document.createElement('h3');
+  titleElement.style.margin = '0';
+  titleElement.textContent = title; // Safe: uses textContent instead of innerHTML
+
+  // Create close button
+  const closeButton = document.createElement('button');
+  closeButton.style.cssText = 'background: none; border: none; font-size: 24px; cursor: pointer;';
+  closeButton.textContent = '×';
+  closeButton.onclick = () => {
+    if (window.hidePluginPopup) {
+      window.hidePluginPopup();
+    } else {
+      hidePopup();
+    }
+  };
+
+  // Create content container
+  const contentContainer = document.createElement('div');
+  // Note: innerHTML is used here, but caller must ensure content is sanitized
+  contentContainer.innerHTML = content;
+
+  // Assemble the popup
+  headerContainer.appendChild(titleElement);
+  headerContainer.appendChild(closeButton);
+  mainContainer.appendChild(headerContainer);
+  mainContainer.appendChild(contentContainer);
+  popup.appendChild(mainContainer);
 
   // Create overlay
   const overlay = document.createElement('div');

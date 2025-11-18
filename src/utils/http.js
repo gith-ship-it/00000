@@ -12,7 +12,7 @@
 export async function getJSON(url, type = 'GET') {
   const response = await fetch(url, { method: type });
   if (!response.ok) {
-    throw new Error(\`HTTP error! status: \${response.status}\`);
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
   return await response.json();
 }
@@ -36,7 +36,7 @@ export async function postFormData(url, data, headers = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(\`HTTP error! status: \${response.status}\`);
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
 
   return await response.json();

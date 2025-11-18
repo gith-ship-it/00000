@@ -39,25 +39,49 @@ export function initPluginPopup() {
     display: none;
   `;
 
-  popup.innerHTML = `
-    <div style="padding: 15px; border-bottom: 1px solid #ddd;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="margin: 0; font-size: 16px;">FB Ads Manager Plugin</h3>
-        <button onclick="window.mainclose()"
-                style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">
-          &times;
-        </button>
-      </div>
-    </div>
-    <div id="plugin-content" style="padding: 15px;">
-      <div id="dblock1" style="margin-bottom: 15px;"></div>
-      <div id="dblock1cc" style="margin-bottom: 15px;"></div>
-      <div id="dblock2" style="margin-bottom: 15px;"></div>
-      <div id="dblock3" style="margin-bottom: 15px;"></div>
-      <div id="dblock4" style="margin-bottom: 15px;"></div>
-    </div>
-  `;
+  // Create header container
+  const headerContainer = document.createElement('div');
+  headerContainer.style.cssText = 'padding: 15px; border-bottom: 1px solid #ddd;';
 
+  const headerInner = document.createElement('div');
+  headerInner.style.cssText = 'display: flex; justify-content: space-between; align-items: center;';
+
+  // Create title
+  const title = document.createElement('h3');
+  title.style.cssText = 'margin: 0; font-size: 16px;';
+  title.textContent = 'FB Ads Manager Plugin';
+
+  // Create close button
+  const closeButton = document.createElement('button');
+  closeButton.style.cssText = 'background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;';
+  closeButton.textContent = '×';
+  closeButton.onclick = () => {
+    if (window.mainclose) {
+      window.mainclose();
+    }
+  };
+
+  headerInner.appendChild(title);
+  headerInner.appendChild(closeButton);
+  headerContainer.appendChild(headerInner);
+
+  // Create content container
+  const contentContainer = document.createElement('div');
+  contentContainer.id = 'plugin-content';
+  contentContainer.style.cssText = 'padding: 15px;';
+
+  // Create content blocks
+  const blockIds = ['dblock1', 'dblock1cc', 'dblock2', 'dblock3', 'dblock4'];
+  blockIds.forEach(id => {
+    const block = document.createElement('div');
+    block.id = id;
+    block.style.marginBottom = '15px';
+    contentContainer.appendChild(block);
+  });
+
+  // Assemble popup
+  popup.appendChild(headerContainer);
+  popup.appendChild(contentContainer);
   document.body.appendChild(popup);
 }
 
