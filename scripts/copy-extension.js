@@ -16,8 +16,8 @@ const extensionDir = join(projectRoot, 'extension');
 
 // Files to copy
 const filesToCopy = [
-  'fbacc-plugin.min.js',
-  'fbacc-plugin.min.js.map'
+  { file: 'fbacc-plugin.min.js', critical: true },
+  { file: 'fbacc-plugin.min.js.map', critical: false }
 ];
 
 console.log('Copying built files to extension directory...');
@@ -25,7 +25,7 @@ console.log('Copying built files to extension directory...');
 let copiedCount = 0;
 let errorCount = 0;
 
-filesToCopy.forEach(file => {
+filesToCopy.forEach(({ file, critical }) => {
   const sourcePath = join(distDir, file);
   const destPath = join(extensionDir, file);
 
@@ -35,7 +35,13 @@ filesToCopy.forEach(file => {
       console.log(`✓ Copied ${file}`);
       copiedCount++;
     } else {
-      console.warn(`⚠ Warning: ${file} not found in dist directory`);
+      const message = `${file} not found in dist directory`;
+      if (critical) {
+        console.error(`✗ Error: ${message} (critical file)`);
+        errorCount++;
+      } else {
+        console.warn(`⚠ Warning: ${message} (optional file)`);
+      }
     }
   } catch (error) {
     console.error(`✗ Error copying ${file}: ${error.message}`);

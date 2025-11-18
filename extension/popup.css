@@ -58,6 +58,10 @@ body {
   opacity: 0.9;
 }
 
+.info-box p + p {
+  margin-top: 8px;
+}
+
 .status {
   display: flex;
   align-items: center;
@@ -140,6 +144,10 @@ body {
   font-size: 11px;
   opacity: 0.7;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer div + div {
+  margin-top: 5px;
 }
 
 .shortcut {

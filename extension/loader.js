@@ -17,9 +17,11 @@
   script.src = scriptUrl;
   script.type = 'text/javascript';
 
-  // Add error handling
+  // Add error handling with DOM cleanup
   script.onerror = function() {
     console.error('[FBACC Plugin] Failed to load plugin script');
+    // Remove the script element on error to clean up DOM
+    script.remove();
   };
 
   // Add success handler that cleans up the script element

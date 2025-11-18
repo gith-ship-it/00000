@@ -280,8 +280,9 @@ function exposeGlobalAPI() {
   // Expose a single namespaced API instead of polluting global namespace
   window.FBACCPlugin = {
     // Core state and config (read-only access recommended)
-    getState: () => ({ ...PluginState }),
-    getConfig: () => ({ ...CONFIG }),
+    // Using deep copy to prevent modifications to internal state
+    getState: () => JSON.parse(JSON.stringify(PluginState)),
+    getConfig: () => JSON.parse(JSON.stringify(CONFIG)),
 
     // Auth methods
     Auth: {
