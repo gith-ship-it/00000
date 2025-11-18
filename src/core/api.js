@@ -68,6 +68,7 @@ export async function graphAPIRequest(endpoint, options = {}) {
     try {
       errorData = await response.json();
     } catch (jsonError) {
+      console.error('Failed to parse API error response as JSON:', jsonError);
       throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
     }
     // Log full error details for debugging

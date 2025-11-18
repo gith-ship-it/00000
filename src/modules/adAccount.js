@@ -170,22 +170,22 @@ export async function getAdAccountDetails(accountId, accessToken) {
       }
     ];
 
-    const results = await batchGraphAPIRequests(batchRequests, accessToken);
+    const [basicResult, sensitiveResult] = await batchGraphAPIRequests(batchRequests, accessToken);
 
     // Process basic fields (should always succeed)
-    if (!results[0].success) {
-      throw new Error(results[0].error?.error?.message || 'Failed to fetch basic account details');
+    if (!basicResult.success) {
+      throw new Error(basicResult.error?.error?.message || 'Failed to fetch basic account details');
     }
 
-    let data = results[0].data;
+    let data = basicResult.data;
 
     // Process sensitive fields (may fail due to permissions)
-    if (results[1].success) {
+    if (sensitiveResult.success) {
       // Merge sensitive fields if successful
-      data = { ...data, ...results[1].data };
+      data = { ...data, ...sensitiveResult.data };
     } else {
       // Log warning but don't fail - these fields are optional
-      const errorMsg = results[1].error?.error?.message || 'Permission denied';
+      const errorMsg = sensitiveResult.error?.error?.message || 'Permission denied';
       console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', errorMsg);
     }
 
