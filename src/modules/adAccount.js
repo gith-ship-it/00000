@@ -156,38 +156,19 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
  */
 export async function getAdAccountDetails(accountId, accessToken) {
   try {
-    // Execute both API calls in parallel using Promise.allSettled
-    // This improves performance while avoiding the problematic batch API
-    const [basicResult, sensitiveResult] = await Promise.allSettled([
-      graphAPIRequest(`act_${accountId}`, {
-        params: {
-          fields: BASIC_AD_ACCOUNT_FIELDS.join(',')
-        },
-        accessToken
-      }),
-      graphAPIRequest(`act_${accountId}`, {
-        params: {
-          fields: SENSITIVE_AD_ACCOUNT_FIELDS.join(',')
-        },
-        accessToken
-      })
-    ]);
+    // Combine all fields into a single request as in the original implementation
+    // The API v18.0 works better with all fields requested together
+    const allFields = [
+      ...BASIC_AD_ACCOUNT_FIELDS,
+      ...SENSITIVE_AD_ACCOUNT_FIELDS
+    ];
 
-    // Basic fields are required - throw error if they fail
-    if (basicResult.status === 'rejected') {
-      throw basicResult.reason;
-    }
-
-    let data = basicResult.value;
-
-    // Sensitive fields are optional - merge if successful, warn if not
-    if (sensitiveResult.status === 'fulfilled') {
-      data = { ...data, ...sensitiveResult.value };
-    } else {
-      // Log warning but don't fail - these fields require special permissions
-      const errorMsg = sensitiveResult.reason?.message || 'Permission denied';
-      console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', errorMsg);
-    }
+    const data = await graphAPIRequest(`act_${accountId}`, {
+      params: {
+        fields: allFields.join(',')
+      },
+      accessToken
+    });
 
     return {
       success: true,
