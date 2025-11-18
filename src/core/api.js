@@ -64,7 +64,12 @@ export async function graphAPIRequest(endpoint, options = {}) {
   const response = await fetch(url, fetchOptions);
 
   if (!response.ok) {
-    const errorData = await response.json();
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (jsonError) {
+      throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+    }
     // Log full error details for debugging
     console.error('Facebook API Error Details:', {
       status: response.status,

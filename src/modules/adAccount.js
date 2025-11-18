@@ -5,6 +5,28 @@
 
 import { graphAPIRequest, graphQLRequest, batchGraphAPIRequests } from '../core/api.js';
 import { CONFIG } from '../core/config.js';
+
+/**
+ * Basic ad account fields that should be available to most access tokens
+ */
+const BASIC_AD_ACCOUNT_FIELDS = [
+  'id',
+  'name',
+  'account_status',
+  'disable_reason',
+  'currency',
+  'timezone_name'
+];
+
+/**
+ * Sensitive ad account fields that require ads_management or business_management permissions
+ */
+const SENSITIVE_AD_ACCOUNT_FIELDS = [
+  'amount_spent',
+  'balance',
+  'funding_source_details'
+];
+
 /**
  * Appeal/request review for ad account
  * @param {string} accountId - Ad account ID
@@ -134,34 +156,17 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
  */
 export async function getAdAccountDetails(accountId, accessToken) {
   try {
-    // Basic fields that should be available to most access tokens
-    const basicFields = [
-      'id',
-      'name',
-      'account_status',
-      'disable_reason',
-      'currency',
-      'timezone_name'
-    ];
-
-    // Sensitive fields that require ads_management or business_management permissions
-    const sensitiveFields = [
-      'amount_spent',
-      'balance',
-      'funding_source_details'
-    ];
-
     // Use batch API to fetch both sets of fields in a single network request
     const batchRequests = [
       {
         method: 'GET',
         endpoint: `act_${accountId}`,
-        params: { fields: basicFields.join(',') }
+        params: { fields: BASIC_AD_ACCOUNT_FIELDS.join(',') }
       },
       {
         method: 'GET',
         endpoint: `act_${accountId}`,
-        params: { fields: sensitiveFields.join(',') }
+        params: { fields: SENSITIVE_AD_ACCOUNT_FIELDS.join(',') }
       }
     ];
 
