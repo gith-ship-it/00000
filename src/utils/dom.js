@@ -4,31 +4,6 @@
  */
 
 /**
- * Append content to a tab/element
- * @param {string} content - HTML content to append
- * @param {string} targetId - Target element ID
- */
-export function appendTab(content, targetId) {
-  const element = document.getElementById(targetId);
-  if (element) {
-    element.innerHTML += content;
-  }
-}
-
-/**
- * Append content with additional processing
- * @param {string} content - HTML content to append
- * @param {string} targetId - Target element ID
- * @param {Function} callback - Optional callback after append
- */
-export function appendTabPlus(content, targetId, callback) {
-  appendTab(content, targetId);
-  if (callback && typeof callback === 'function') {
-    callback();
-  }
-}
-
-/**
  * Create and show a modal/popup
  * @param {string} title - Popup title
  * @param {string} content - Popup content (HTML)
@@ -112,8 +87,6 @@ export function togglePopup() {
 }
 
 export default {
-  appendTab,
-  appendTabPlus,
   showPopup,
   hidePopup,
   togglePopup
