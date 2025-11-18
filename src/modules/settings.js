@@ -3,7 +3,7 @@
  * Handles currency, timezone, and other account settings
  */
 
-import { postFormData } from '../utils/http.js';
+import { graphAPIRequest } from '../core/api.js';
 import { CONFIG } from '../core/config.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
 
@@ -16,25 +16,13 @@ import { showPopup, hidePopup } from '../utils/dom.js';
  */
 export async function updateAccountCurrency(accountId, currency, accessToken) {
   try {
-    const apiUrl = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/act_${accountId}`;
-
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('currency', currency.toUpperCase());
-    urlencoded.append('access_token', accessToken);
-
-    const response = await fetch(apiUrl, {
+    const data = await graphAPIRequest(`act_${accountId}`, {
       method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      redirect: 'follow',
-      body: urlencoded
+      params: {
+        currency: currency.toUpperCase()
+      },
+      accessToken
     });
-
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error.error_user_msg || data.error.message);
-    }
 
     return {
       success: true,
@@ -61,25 +49,13 @@ export async function updateAccountCurrency(accountId, currency, accessToken) {
  */
 export async function updateAccountTimezone(accountId, timezoneId, accessToken) {
   try {
-    const apiUrl = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/act_${accountId}`;
-
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('timezone_id', timezoneId);
-    urlencoded.append('access_token', accessToken);
-
-    const response = await fetch(apiUrl, {
+    const data = await graphAPIRequest(`act_${accountId}`, {
       method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      redirect: 'follow',
-      body: urlencoded
+      params: {
+        timezone_id: timezoneId
+      },
+      accessToken
     });
-
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error.error_user_msg || data.error.message);
-    }
 
     return {
       success: true,
