@@ -5,10 +5,13 @@
 
 /**
  * Create and show a modal/popup
- * @param {string} title - Popup title
- * @param {string} content - Popup content (HTML)
+ * @param {string} title - Popup title (will be safely escaped)
+ * @param {HTMLElement|Node} content - DOM element or node for popup content
  * @param {Object} options - Popup options
  * @returns {HTMLElement} The popup element for direct event listener attachment
+ *
+ * SECURITY: This function only accepts DOM elements/nodes for content to prevent XSS attacks.
+ * Build your content using createElement() and DOM methods, not HTML strings.
  */
 export function showPopup(title, content, options = {}) {
   const {
@@ -38,21 +41,45 @@ export function showPopup(title, content, options = {}) {
     overflow: auto;
   `;
 
-  popup.innerHTML = `
-    <div style="padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3 style="margin: 0;">${title}</h3>
-        <button data-action="close-popup" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
-      </div>
-      <div>${content}</div>
-    </div>
-  `;
+  // Create main container
+  const mainContainer = document.createElement('div');
+  mainContainer.style.padding = '20px';
 
-  // Add event listener to close button
-  const closeButton = popup.querySelector('[data-action="close-popup"]');
-  if (closeButton) {
-    closeButton.addEventListener('click', hidePopup);
+  // Create header container
+  const headerContainer = document.createElement('div');
+  headerContainer.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;';
+
+  // Create title element (use textContent for XSS protection)
+  const titleElement = document.createElement('h3');
+  titleElement.style.margin = '0';
+  titleElement.textContent = title; // Safe: uses textContent instead of innerHTML
+
+  // Create close button
+  const closeButton = document.createElement('button');
+  closeButton.setAttribute('data-action', 'close-popup');
+  closeButton.style.cssText = 'background: none; border: none; font-size: 24px; cursor: pointer;';
+  closeButton.textContent = '×';
+  closeButton.addEventListener('click', hidePopup);
+
+  // Create content container
+  const contentContainer = document.createElement('div');
+  // Only accept DOM nodes for security
+  if (content instanceof Node) {
+    contentContainer.appendChild(content);
+  } else {
+    console.error('showPopup: content must be a DOM Node for security. HTML strings are not supported.');
+    const errorMsg = document.createElement('p');
+    errorMsg.textContent = 'Error: Invalid content provided';
+    errorMsg.style.color = 'red';
+    contentContainer.appendChild(errorMsg);
   }
+
+  // Assemble the popup
+  headerContainer.appendChild(titleElement);
+  headerContainer.appendChild(closeButton);
+  mainContainer.appendChild(headerContainer);
+  mainContainer.appendChild(contentContainer);
+  popup.appendChild(mainContainer);
 
   // Create overlay
   const overlay = document.createElement('div');

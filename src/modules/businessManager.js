@@ -175,40 +175,48 @@ export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
  * Show add Business Manager form
  */
 export function showAddBusinessManagerForm() {
-  const formHTML = `
-    <div id="add-bm-form">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Business Manager Name:</label>
-        <input type="text" id="bm-name" placeholder="Enter Business Manager name"
-               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-      </div>
+  // Create form container using DOM methods (XSS-safe)
+  const formContainer = document.createElement('div');
+  formContainer.id = 'add-bm-form';
 
-      <div style="text-align: right;">
-        <button data-action="cancel"
-                style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
-          Cancel
-        </button>
-        <button data-action="submit"
-                style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Create BM
-        </button>
-      </div>
-    </div>
-  `;
+  // Create input field container
+  const fieldContainer = document.createElement('div');
+  fieldContainer.style.marginBottom = '15px';
 
-  const popupElement = showPopup('Add Business Manager', formHTML);
+  const label = document.createElement('label');
+  label.style.cssText = 'display: block; margin-bottom: 5px;';
+  label.textContent = 'Business Manager Name:';
 
-  // Add event listeners to the popup element
-  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
-  const submitButton = popupElement.querySelector('[data-action="submit"]');
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.id = 'bm-name';
+  input.placeholder = 'Enter Business Manager name';
+  input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
 
-  if (cancelButton) {
-    cancelButton.addEventListener('click', hidePopup);
-  }
+  fieldContainer.append(label, input);
 
-  if (submitButton) {
-    submitButton.addEventListener('click', processAddBusinessManager);
-  }
+  // Create button container
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.textAlign = 'right';
+
+  const cancelButton = document.createElement('button');
+  cancelButton.setAttribute('data-action', 'cancel');
+  cancelButton.textContent = 'Cancel';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.addEventListener('click', hidePopup);
+
+  const createButton = document.createElement('button');
+  createButton.setAttribute('data-action', 'submit');
+  createButton.textContent = 'Create BM';
+  createButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  createButton.addEventListener('click', processAddBusinessManager);
+
+  buttonContainer.append(cancelButton, createButton);
+
+  // Assemble form
+  formContainer.append(fieldContainer, buttonContainer);
+
+  showPopup('Add Business Manager', formContainer);
 }
 
 /**
