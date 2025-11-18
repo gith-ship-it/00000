@@ -4,7 +4,8 @@
   "version": "6.4.0",
   "description": "A powerful plugin for managing Facebook Ads Manager operations including ad accounts, pages, business managers, and payment methods.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "host_permissions": [
     "https://*.facebook.com/*",

@@ -32,10 +32,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       return;
     }
 
-    // Remove any existing event listeners by cloning and replacing the button
-    const newBtn = openBtn.cloneNode(true);
-    openBtn.parentNode.replaceChild(newBtn, openBtn);
-
     if (isOnAdsManager) {
       // User is already on Ads Manager
       if (statusLabel) {
@@ -45,8 +41,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         infoBox.textContent = '插件已在此頁面上載入。使用快捷鍵 Ctrl+Shift+F 開啟主介面。';
       }
 
-      newBtn.textContent = '重新載入頁面';
-      newBtn.addEventListener('click', async function() {
+      openBtn.textContent = '重新載入頁面';
+      openBtn.addEventListener('click', async function() {
         await chrome.tabs.reload(currentTab.id);
         window.close();
       });
@@ -60,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         infoBox.textContent = '請前往廣告管理員頁面以啟用插件功能。';
       }
 
-      newBtn.textContent = '前往廣告管理員';
-      newBtn.addEventListener('click', async function() {
+      openBtn.textContent = '前往廣告管理員';
+      openBtn.addEventListener('click', async function() {
         await chrome.tabs.create({
           url: 'https://business.facebook.com/adsmanager'
         });
@@ -73,8 +69,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         statusLabel.textContent = '等待中';
       }
 
-      newBtn.textContent = '開啟 Facebook 廣告管理員';
-      newBtn.addEventListener('click', async function() {
+      openBtn.textContent = '開啟 Facebook 廣告管理員';
+      openBtn.addEventListener('click', async function() {
         await chrome.tabs.create({
           url: 'https://business.facebook.com/adsmanager'
         });

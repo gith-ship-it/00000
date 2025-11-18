@@ -171,11 +171,12 @@ extension/
 
 此擴充功能需要以下權限：
 
-- **activeTab**: 存取目前標籤頁以注入插件
-- **scripting**: 在頁面中執行內容腳本
-- **host_permissions** (`*://*.facebook.com/*`, `*://*.business.facebook.com/*`):
-  - 僅在 Facebook 網域上運作
+- **activeTab**: 存取目前標籤頁資訊
+- **tabs**: 允許重新載入標籤頁（用於「重新載入頁面」按鈕功能）
+- **host_permissions** (`https://*.facebook.com/*`, `https://*.business.facebook.com/*`):
+  - 僅在 Facebook 網域上運作（僅 HTTPS）
   - 需要存取 Facebook API 和頁面內容
+  - 使用聲明式 content_scripts 自動注入插件
 
 ## 📝 版本資訊
 
