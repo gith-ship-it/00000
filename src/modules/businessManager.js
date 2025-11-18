@@ -210,10 +210,55 @@ export function showAddBusinessManagerForm() {
   showPopup('Add Business Manager', formHTML);
 }
 
+/**
+ * Process add Business Manager form submission
+ */
+export async function processAddBusinessManager() {
+  const bmNameInput = document.getElementById('bm-name');
+  if (!bmNameInput) {
+    console.error('BM name input element not found');
+    return;
+  }
+
+  const bmName = bmNameInput.value.trim();
+  if (!bmName) {
+    alert('Please enter a Business Manager name');
+    return;
+  }
+
+  // Get access token from global state
+  const accessToken = window.PluginState?.accessToken || window.privateToken;
+
+  if (!accessToken) {
+    alert('Access token not available');
+    return;
+  }
+
+  try {
+    const result = await addBusinessManager(bmName, accessToken);
+
+    if (result.success) {
+      alert(`Business Manager "${bmName}" created successfully!`);
+      hidePopup();
+
+      // Reload if mainreload is available
+      if (window.mainreload) {
+        window.mainreload();
+      }
+    } else {
+      alert(`Error: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('Error processing BM creation:', error);
+    alert(`Error: ${error.message}`);
+  }
+}
+
 export default {
   addBusinessManager,
   addUserToBusinessManager,
   addAdAccountToBusinessManager,
   requestAdAccountAccess,
-  showAddBusinessManagerForm
+  showAddBusinessManagerForm,
+  processAddBusinessManager
 };

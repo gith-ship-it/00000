@@ -28,18 +28,43 @@ export function getURLParameter(name) {
 }
 
 /**
- * Copy text to clipboard
+ * Copy text to clipboard using modern Clipboard API with fallback
  * @param {string} text - Text to copy
+ * @returns {Promise<void>}
  */
-export function copyToClipboard(text) {
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  textarea.style.position = 'fixed';
-  textarea.style.opacity = '0';
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand('copy');
-  document.body.removeChild(textarea);
+export async function copyToClipboard(text) {
+  // Try modern Clipboard API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (err) {
+      console.warn('Clipboard API failed, falling back to execCommand:', err);
+    }
+  }
+
+  // Fallback to deprecated execCommand for older browsers
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.top = '0';
+    textarea.style.left = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    const successful = document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    if (!successful) {
+      throw new Error('execCommand copy failed');
+    }
+  } catch (err) {
+    console.error('Failed to copy text to clipboard:', err);
+    throw new Error('Could not copy to clipboard');
+  }
 }
 
 /**

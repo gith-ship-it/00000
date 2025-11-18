@@ -28,11 +28,11 @@ export async function graphAPIRequest(endpoint, options = {}) {
     accessToken = null
   } = options;
 
-  const token = accessToken || getAccessToken().token;
-
-  if (!token) {
-    throw new Error('Access token not available');
+  if (!accessToken) {
+    throw new Error('Access token is required. Please pass it explicitly.');
   }
+
+  const token = accessToken;
 
   const queryParams = new URLSearchParams({
     access_token: token,
@@ -60,11 +60,11 @@ export async function graphAPIRequest(endpoint, options = {}) {
  * @returns {Promise<Object>} API response
  */
 export async function graphQLRequest(docId, variables, friendlyName, accessToken = null) {
-  const token = accessToken || getAccessToken().token;
-
-  if (!token) {
-    throw new Error('Access token not available');
+  if (!accessToken) {
+    throw new Error('Access token is required. Please pass it explicitly.');
   }
+
+  const token = accessToken;
 
   const urlencoded = new URLSearchParams();
   urlencoded.append('access_token', token);
@@ -101,11 +101,11 @@ export async function graphQLRequest(docId, variables, friendlyName, accessToken
  * @returns {Promise<Array>} Array of responses
  */
 export async function batchGraphAPIRequests(requests, accessToken = null) {
-  const token = accessToken || getAccessToken().token;
-
-  if (!token) {
-    throw new Error('Access token not available');
+  if (!accessToken) {
+    throw new Error('Access token is required. Please pass it explicitly.');
   }
+
+  const token = accessToken;
 
   const batch = requests.map(req => ({
     method: req.method || 'GET',

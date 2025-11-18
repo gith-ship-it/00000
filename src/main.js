@@ -97,7 +97,7 @@ function initialize() {
  * Setup keyboard shortcuts
  */
 function setupKeyboardShortcuts() {
-  document.onkeydown = function(evt) {
+  document.addEventListener('keydown', function(evt) {
     evt = evt || window.event;
 
     // ESC key - close popup
@@ -110,7 +110,7 @@ function setupKeyboardShortcuts() {
       evt.preventDefault();
       Popup.togglePluginPopup();
     }
-  };
+  });
 }
 
 /**
@@ -229,6 +229,11 @@ function exposeGlobalAPI() {
   // Settings
   window.ShowEditcurr = Settings.showEditCurrencyForm;
   window.ShowEdittzone = Settings.showEditTimezoneForm;
+  window.processEditCurrency = Settings.processEditCurrency;
+  window.processEditTimezone = Settings.processEditTimezone;
+
+  // Business Manager
+  window.processAddBusinessManager = BusinessManager.processAddBusinessManager;
 }
 
 /**

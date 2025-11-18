@@ -11,7 +11,8 @@
     "watch": "rollup -c --watch",
     "lint": "eslint src/**/*.js",
     "format": "prettier --write \"src/**/*.js\"",
-    "clean": "rm -rf dist"
+    "clean": "rimraf dist",
+    "preinstall": "npm install -g rimraf || true"
   },
   "keywords": [
     "facebook",
@@ -29,10 +30,11 @@
     "@rollup/plugin-terser": "^0.4.0",
     "eslint": "^8.50.0",
     "prettier": "^3.0.0",
+    "rimraf": "^5.0.0",
     "rollup": "^4.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/fbacc.git"
+    "url": "https://github.com/gith-ship-it/fbacc.git"
   }
 }

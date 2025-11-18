@@ -13,19 +13,18 @@ export default {
       name: 'FBAdPlugin',
       sourcemap: !production
     },
-    {
+    production && {
       file: 'dist/fbacc-plugin.min.js',
       format: 'iife',
       name: 'FBAdPlugin',
-      plugins: production ? [terser()] : [],
-      sourcemap: production
+      plugins: [terser()],
+      sourcemap: true
     }
-  ],
+  ].filter(Boolean),
   plugins: [
     resolve({
       browser: true
     }),
-    commonjs(),
-    production && terser()
+    commonjs()
   ]
 };

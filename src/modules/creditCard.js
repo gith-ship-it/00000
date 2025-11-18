@@ -149,43 +149,98 @@ export async function processCreditCardForm() {
   const ccCVC = document.getElementById('cc-cvc')?.value;
   const ccCountry = document.getElementById('cc-country')?.value;
 
+  // Validation
   if (!ccNumber || !ccMonth || !ccYear || !ccCVC || !ccCountry) {
-    alert('Please fill in all fields');
+    showError('Please fill in all fields');
     return;
   }
 
-  // Validation
-  if (!/^\d{13,19}$/.test(ccNumber.replace(/\s/g, ''))) {
-    alert('Invalid card number');
+  const cleanNumber = ccNumber.replace(/\s/g, '');
+  if (!/^\d{13,19}$/.test(cleanNumber)) {
+    showError('Invalid card number. Must be 13-19 digits.');
     return;
   }
 
   if (!/^\d{2}$/.test(ccMonth) || parseInt(ccMonth) < 1 || parseInt(ccMonth) > 12) {
-    alert('Invalid month');
+    showError('Invalid month. Must be 01-12.');
     return;
   }
 
-  if (!/^\d{4}$/.test(ccYear)) {
-    alert('Invalid year');
+  const currentYear = new Date().getFullYear();
+  if (!/^\d{4}$/.test(ccYear) || parseInt(ccYear) < currentYear) {
+    showError('Invalid year. Must be current year or later.');
     return;
   }
 
   if (!/^\d{3,4}$/.test(ccCVC)) {
-    alert('Invalid CVC');
+    showError('Invalid CVC. Must be 3 or 4 digits.');
     return;
   }
 
-  hidePopup();
+  // Get account info from global state
+  const accountId = window.PluginState?.accountId || window.selectedacc;
+  const socialId = window.PluginState?.socialId || window.socid;
+  const accessToken = window.PluginState?.accessToken || window.privateToken;
 
-  // Note: This would need to be called with actual account details
-  // The implementation would integrate with the main app context
-  console.log('Credit card form submitted', {
-    ccNumber: ccNumber.replace(/\s/g, ''),
-    ccMonth,
-    ccYear,
-    ccCVC,
-    ccCountry: ccCountry.toUpperCase()
-  });
+  if (!accountId || !socialId || !accessToken) {
+    showError('Account information not available. Please reload the page.');
+    return;
+  }
+
+  try {
+    hidePopup();
+
+    const result = await addCreditCardToAccount(
+      accountId,
+      socialId,
+      cleanNumber,
+      ccYear,
+      ccMonth,
+      ccCVC,
+      ccCountry.toUpperCase(),
+      accessToken
+    );
+
+    if (result.success) {
+      alert('Credit card added successfully!');
+
+      // Reload if mainreload is available
+      if (window.mainreload) {
+        window.mainreload();
+      }
+    } else {
+      alert(`Error adding credit card: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('Error processing credit card form:', error);
+    alert(`Error: ${error.message}`);
+  }
+}
+
+/**
+ * Show error message in form
+ * @param {string} message - Error message
+ */
+function showError(message) {
+  // Try to find or create error display element
+  let errorDiv = document.getElementById('cc-form-error');
+
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'cc-form-error';
+    errorDiv.style.cssText = 'color: red; margin-bottom: 10px; padding: 10px; background: #fee; border-radius: 4px;';
+
+    const form = document.getElementById('add-cc-form');
+    if (form) {
+      form.insertBefore(errorDiv, form.firstChild);
+    } else {
+      alert(message);
+      return;
+    }
+  }
+
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
 }
 
 export default {

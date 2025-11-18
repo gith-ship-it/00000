@@ -24,9 +24,9 @@ export async function appealFanpage(pageId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'PageAppealMutation');
+    urlencoded.append('fb_api_req_friendly_name', 'useAdAccountALRAppealMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '6187985357937864'); // Example doc_id
+    urlencoded.append('doc_id', '5197966936890203');
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -65,9 +65,9 @@ export async function deleteFanpage(pageId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'PageDeleteMutation');
+    urlencoded.append('fb_api_req_friendly_name', 'usePagesCometDeletePageMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941331'); // Example doc_id
+    urlencoded.append('doc_id', '4899485650107392');
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -107,9 +107,9 @@ export async function unhideFanpage(pageId, accessToken) {
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'PageUnhideMutation');
+    urlencoded.append('fb_api_req_friendly_name', 'usePagesCometEditPageVisibilityMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941332'); // Example doc_id
+    urlencoded.append('doc_id', '4920939114687785');
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);

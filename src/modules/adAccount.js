@@ -18,15 +18,18 @@ export async function appealAdAccount(accountId, accessToken) {
 
     const variables = {
       input: {
-        account_id: accountId,
-        appeal_reason: null,
-        client_mutation_id: '1'
+        client_mutation_id: '1',
+        actor_id: accountId,
+        ad_account_id: accountId,
+        ids_issue_ent_id: '1',
+        appeal_comment: "I'm not sure which policy was violated.",
+        callsite: 'ACCOUNT_QUALITY'
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'AdAccountAdministrativeStatusSettingMutation');
+    urlencoded.append('fb_api_req_friendly_name', 'useAdAccountALRAppealMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '6187985357937863');
+    urlencoded.append('doc_id', '5197966936890203');
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -110,7 +113,8 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'RemoveAdAccountAccessMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '5123456789012345'); // Example doc_id
+    // TODO: Replace with actual doc_id from Facebook GraphQL API
+    urlencoded.append('doc_id', '5123456789012345');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
 
