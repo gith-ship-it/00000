@@ -65,7 +65,18 @@ export async function graphAPIRequest(endpoint, options = {}) {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.error?.message || 'API request failed');
+    // Log full error details for debugging
+    console.error('Facebook API Error Details:', {
+      status: response.status,
+      statusText: response.statusText,
+      error: errorData.error,
+      endpoint: endpoint
+    });
+    // Throw error with detailed message
+    const errorMessage = errorData.error?.message || 'API request failed';
+    const errorCode = errorData.error?.code || 'UNKNOWN';
+    const errorType = errorData.error?.type || 'Unknown';
+    throw new Error(`${errorMessage} (Code: ${errorCode}, Type: ${errorType})`);
   }
 
   return await response.json();

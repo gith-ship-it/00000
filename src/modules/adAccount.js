@@ -134,24 +134,46 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
  */
 export async function getAdAccountDetails(accountId, accessToken) {
   try {
-    const fields = [
+    // Basic fields that should be available to most access tokens
+    const basicFields = [
       'id',
       'name',
       'account_status',
       'disable_reason',
       'currency',
-      'timezone_name',
+      'timezone_name'
+    ];
+
+    // Try to get basic account details first
+    let data = await graphAPIRequest(`act_${accountId}`, {
+      params: {
+        fields: basicFields.join(',')
+      },
+      accessToken
+    });
+
+    // Try to get additional fields if permissions allow
+    // These fields require ads_management or business_management permissions
+    const sensitiveFields = [
       'amount_spent',
       'balance',
       'funding_source_details'
     ];
 
-    const data = await graphAPIRequest(`act_${accountId}`, {
-      params: {
-        fields: fields.join(',')
-      },
-      accessToken
-    });
+    try {
+      const additionalData = await graphAPIRequest(`act_${accountId}`, {
+        params: {
+          fields: sensitiveFields.join(',')
+        },
+        accessToken
+      });
+
+      // Merge additional fields if successful
+      data = { ...data, ...additionalData };
+    } catch (permissionError) {
+      // Log warning but don't fail - these fields are optional
+      console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', permissionError.message);
+    }
 
     return {
       success: true,
