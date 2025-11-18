@@ -3,9 +3,8 @@
  * Handles adding and managing payment methods for ad accounts
  */
 
-import { graphQLRequest } from '../utils/http.js';
+import { graphQLRequest } from '../core/api.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
-
 import { CONFIG } from '../core/config.js';
 /**
  * Add credit card to ad account
@@ -30,10 +29,6 @@ export async function addCreditCardToAccount(
   accessToken
 ) {
   try {
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('access_token', accessToken);
-    urlencoded.append('paymentAccountID', adAccountId);
-
     const variables = {
       input: {
         credit_card_id: adAccountId,
@@ -53,24 +48,13 @@ export async function addCreditCardToAccount(
       }
     };
 
-    urlencoded.append('fb_api_req_friendly_name', 'useFBAAddCreditCardMutation');
-    urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.ADD_CREDIT_CARD);
-    urlencoded.append('fb_api_caller_class', 'RelayModern');
-
-    const response = await fetch('https://www.facebook.com/api/graphql/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: urlencoded
-    });
-
-    const result = await response.json();
-
-    if (result.errors) {
-      throw new Error(result.errors[0]?.message || 'Failed to add credit card');
-    }
+    const result = await graphQLRequest(
+      CONFIG.GRAPHQL_DOC_IDS.ADD_CREDIT_CARD,
+      variables,
+      'useFBAAddCreditCardMutation',
+      accessToken,
+      { paymentAccountID: adAccountId }
+    );
 
     return {
       success: true,
