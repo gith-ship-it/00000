@@ -79,47 +79,58 @@ export async function updateAccountTimezone(accountId, timezoneId, accessToken) 
 export function showEditCurrencyForm() {
   const currencies = Object.keys(CONFIG.CURRENCY_SYMBOLS);
 
-  const currencyOptions = currencies.map(code => {
+  // Create form container using DOM methods (XSS-safe)
+  const formContainer = document.createElement('div');
+  formContainer.id = 'edit-currency-form';
+
+  // Create select field container
+  const fieldContainer = document.createElement('div');
+  fieldContainer.style.marginBottom = '15px';
+
+  const label = document.createElement('label');
+  label.style.cssText = 'display: block; margin-bottom: 5px;';
+  label.textContent = 'Select Currency:';
+
+  const select = document.createElement('select');
+  select.id = 'currency-select';
+  select.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
+
+  // Add currency options
+  currencies.forEach(code => {
     const symbol = CONFIG.CURRENCY_SYMBOLS[code];
-    return `<option value="${code}">${code} (${symbol})</option>`;
-  }).join('');
+    const option = document.createElement('option');
+    option.value = code;
+    option.textContent = `${code} (${symbol})`;
+    select.appendChild(option);
+  });
 
-  const formHTML = `
-    <div id="edit-currency-form">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Select Currency:</label>
-        <select id="currency-select"
-                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-          ${currencyOptions}
-        </select>
-      </div>
+  fieldContainer.appendChild(label);
+  fieldContainer.appendChild(select);
 
-      <div style="text-align: right;">
-        <button data-action="cancel"
-                style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
-          Cancel
-        </button>
-        <button data-action="submit"
-                style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Update Currency
-        </button>
-      </div>
-    </div>
-  `;
+  // Create button container
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.textAlign = 'right';
 
-  const popupElement = showPopup('Edit Currency', formHTML);
+  const cancelButton = document.createElement('button');
+  cancelButton.setAttribute('data-action', 'cancel');
+  cancelButton.textContent = 'Cancel';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.addEventListener('click', hidePopup);
 
-  // Add event listeners to the popup element
-  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
-  const submitButton = popupElement.querySelector('[data-action="submit"]');
+  const updateButton = document.createElement('button');
+  updateButton.setAttribute('data-action', 'submit');
+  updateButton.textContent = 'Update Currency';
+  updateButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  updateButton.addEventListener('click', processEditCurrency);
 
-  if (cancelButton) {
-    cancelButton.addEventListener('click', hidePopup);
-  }
+  buttonContainer.appendChild(cancelButton);
+  buttonContainer.appendChild(updateButton);
 
-  if (submitButton) {
-    submitButton.addEventListener('click', processEditCurrency);
-  }
+  // Assemble form
+  formContainer.appendChild(fieldContainer);
+  formContainer.appendChild(buttonContainer);
+
+  showPopup('Edit Currency', formContainer);
 }
 
 /**
@@ -139,46 +150,57 @@ export function showEditTimezoneForm() {
     'Australia/Sydney'
   ];
 
-  const timezoneOptions = timezones.map(tz => {
-    return `<option value="${tz}">${tz.replace(/_/g, ' ')}</option>`;
-  }).join('');
+  // Create form container using DOM methods (XSS-safe)
+  const formContainer = document.createElement('div');
+  formContainer.id = 'edit-timezone-form';
 
-  const formHTML = `
-    <div id="edit-timezone-form">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Select Timezone:</label>
-        <select id="timezone-select"
-                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-          ${timezoneOptions}
-        </select>
-      </div>
+  // Create select field container
+  const fieldContainer = document.createElement('div');
+  fieldContainer.style.marginBottom = '15px';
 
-      <div style="text-align: right;">
-        <button data-action="cancel"
-                style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
-          Cancel
-        </button>
-        <button data-action="submit"
-                style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Update Timezone
-        </button>
-      </div>
-    </div>
-  `;
+  const label = document.createElement('label');
+  label.style.cssText = 'display: block; margin-bottom: 5px;';
+  label.textContent = 'Select Timezone:';
 
-  const popupElement = showPopup('Edit Timezone', formHTML);
+  const select = document.createElement('select');
+  select.id = 'timezone-select';
+  select.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
 
-  // Add event listeners to the popup element
-  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
-  const submitButton = popupElement.querySelector('[data-action="submit"]');
+  // Add timezone options
+  timezones.forEach(tz => {
+    const option = document.createElement('option');
+    option.value = tz;
+    option.textContent = tz.replace(/_/g, ' ');
+    select.appendChild(option);
+  });
 
-  if (cancelButton) {
-    cancelButton.addEventListener('click', hidePopup);
-  }
+  fieldContainer.appendChild(label);
+  fieldContainer.appendChild(select);
 
-  if (submitButton) {
-    submitButton.addEventListener('click', processEditTimezone);
-  }
+  // Create button container
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.textAlign = 'right';
+
+  const cancelButton = document.createElement('button');
+  cancelButton.setAttribute('data-action', 'cancel');
+  cancelButton.textContent = 'Cancel';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.addEventListener('click', hidePopup);
+
+  const updateButton = document.createElement('button');
+  updateButton.setAttribute('data-action', 'submit');
+  updateButton.textContent = 'Update Timezone';
+  updateButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  updateButton.addEventListener('click', processEditTimezone);
+
+  buttonContainer.appendChild(cancelButton);
+  buttonContainer.appendChild(updateButton);
+
+  // Assemble form
+  formContainer.appendChild(fieldContainer);
+  formContainer.appendChild(buttonContainer);
+
+  showPopup('Edit Timezone', formContainer);
 }
 
 /**

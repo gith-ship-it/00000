@@ -73,67 +73,81 @@ export async function addCreditCardToAccount(
 }
 
 /**
+ * Helper function to create a form field
+ */
+function createFormField(labelText, inputId, placeholder, options = {}) {
+  const container = document.createElement('div');
+  container.style.marginBottom = '15px';
+
+  const label = document.createElement('label');
+  label.style.cssText = 'display: block; margin-bottom: 5px;';
+  label.textContent = labelText;
+
+  const input = document.createElement('input');
+  input.type = options.type || 'text';
+  input.id = inputId;
+  input.placeholder = placeholder;
+  if (options.maxlength) input.maxLength = options.maxlength;
+  input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
+
+  container.appendChild(label);
+  container.appendChild(input);
+  return container;
+}
+
+/**
  * Show add credit card form
  */
 export function showAddCreditCardForm() {
-  const formHTML = `
-    <div id="add-cc-form">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Card Number:</label>
-        <input type="text" id="cc-number" placeholder="1234 5678 9012 3456"
-               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-      </div>
+  // Create form container using DOM methods (XSS-safe)
+  const formContainer = document.createElement('div');
+  formContainer.id = 'add-cc-form';
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-        <div>
-          <label style="display: block; margin-bottom: 5px;">Month:</label>
-          <input type="text" id="cc-month" placeholder="MM" maxlength="2"
-                 style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-        <div>
-          <label style="display: block; margin-bottom: 5px;">Year:</label>
-          <input type="text" id="cc-year" placeholder="YYYY" maxlength="4"
-                 style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-        <div>
-          <label style="display: block; margin-bottom: 5px;">CVC:</label>
-          <input type="text" id="cc-cvc" placeholder="123" maxlength="4"
-                 style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-      </div>
+  // Card number field
+  formContainer.appendChild(createFormField('Card Number:', 'cc-number', '1234 5678 9012 3456'));
 
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Country Code:</label>
-        <input type="text" id="cc-country" placeholder="US" maxlength="2"
-               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-      </div>
+  // Grid container for month, year, CVC
+  const gridContainer = document.createElement('div');
+  gridContainer.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;';
 
-      <div style="text-align: right;">
-        <button data-action="cancel"
-                style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
-          Cancel
-        </button>
-        <button data-action="submit"
-                style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Add Card
-        </button>
-      </div>
-    </div>
-  `;
+  const monthField = createFormField('Month:', 'cc-month', 'MM', { maxlength: 2 });
+  monthField.style.marginBottom = '0';
+  gridContainer.appendChild(monthField);
 
-  const popupElement = showPopup('Add Credit Card', formHTML);
+  const yearField = createFormField('Year:', 'cc-year', 'YYYY', { maxlength: 4 });
+  yearField.style.marginBottom = '0';
+  gridContainer.appendChild(yearField);
 
-  // Add event listeners to the popup element
-  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
-  const submitButton = popupElement.querySelector('[data-action="submit"]');
+  const cvcField = createFormField('CVC:', 'cc-cvc', '123', { maxlength: 4 });
+  cvcField.style.marginBottom = '0';
+  gridContainer.appendChild(cvcField);
 
-  if (cancelButton) {
-    cancelButton.addEventListener('click', hidePopup);
-  }
+  formContainer.appendChild(gridContainer);
 
-  if (submitButton) {
-    submitButton.addEventListener('click', processCreditCardForm);
-  }
+  // Country code field
+  formContainer.appendChild(createFormField('Country Code:', 'cc-country', 'US', { maxlength: 2 }));
+
+  // Button container
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.textAlign = 'right';
+
+  const cancelButton = document.createElement('button');
+  cancelButton.setAttribute('data-action', 'cancel');
+  cancelButton.textContent = 'Cancel';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.addEventListener('click', hidePopup);
+
+  const addButton = document.createElement('button');
+  addButton.setAttribute('data-action', 'submit');
+  addButton.textContent = 'Add Card';
+  addButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  addButton.addEventListener('click', processCreditCardForm);
+
+  buttonContainer.appendChild(cancelButton);
+  buttonContainer.appendChild(addButton);
+  formContainer.appendChild(buttonContainer);
+
+  showPopup('Add Credit Card', formContainer);
 }
 
 /**

@@ -146,44 +146,76 @@ async function loadInitialData() {
 function displayAccountInfo(accountData) {
   const currencySymbol = Settings.getCurrencySymbol(accountData.currency);
 
-  const infoHTML = `
-    <div style="padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 10px;">
-      <h4 style="margin: 0 0 10px 0;">Account Info</h4>
-      <p style="margin: 5px 0;"><strong>Name:</strong> ${accountData.name || 'N/A'}</p>
-      <p style="margin: 5px 0;"><strong>ID:</strong> ${accountData.id || 'N/A'}</p>
-      <p style="margin: 5px 0;"><strong>Status:</strong> ${accountData.account_status || 'N/A'}</p>
-      <p style="margin: 5px 0;"><strong>Currency:</strong> ${currencySymbol} ${accountData.currency || 'N/A'}</p>
-      <p style="margin: 5px 0;"><strong>Timezone:</strong> ${accountData.timezone_name || 'N/A'}</p>
-    </div>
-  `;
+  // Create account info container (XSS-safe using DOM methods)
+  const infoContainer = document.createElement('div');
+  infoContainer.style.cssText = 'padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 10px;';
 
-  Tabs.setTab(infoHTML, 'dblock1');
+  // Create title
+  const title = document.createElement('h4');
+  title.style.cssText = 'margin: 0 0 10px 0;';
+  title.textContent = 'Account Info';
+  infoContainer.appendChild(title);
+
+  // Helper function to create info paragraph
+  const createInfoParagraph = (label, value) => {
+    const p = document.createElement('p');
+    p.style.cssText = 'margin: 5px 0;';
+
+    const strong = document.createElement('strong');
+    strong.textContent = label + ': ';
+    p.appendChild(strong);
+
+    const textNode = document.createTextNode(value || 'N/A');
+    p.appendChild(textNode);
+
+    return p;
+  };
+
+  // Add account info fields (all XSS-safe)
+  infoContainer.appendChild(createInfoParagraph('Name', accountData.name));
+  infoContainer.appendChild(createInfoParagraph('ID', accountData.id));
+  infoContainer.appendChild(createInfoParagraph('Status', accountData.account_status));
+  infoContainer.appendChild(createInfoParagraph('Currency', `${currencySymbol} ${accountData.currency || 'N/A'}`));
+  infoContainer.appendChild(createInfoParagraph('Timezone', accountData.timezone_name));
+
+  Tabs.setTab(infoContainer, 'dblock1');
 
   // Display funding source info
   if (accountData.funding_source_details) {
-    const cardHTML = `
-      <div style="padding: 10px; background: #f5f5f5; border-radius: 4px;">
-        <h4 style="margin: 0 0 10px 0;">Payment Method</h4>
-        <p style="margin: 5px 0;">
-          <strong>Card:</strong> ${accountData.funding_source_details.display_string || 'No card on file'}
-          &nbsp;[<a href="#" data-action="add-credit-card">add</a>]
-        </p>
-      </div>
-    `;
+    const cardContainer = document.createElement('div');
+    cardContainer.style.cssText = 'padding: 10px; background: #f5f5f5; border-radius: 4px;';
 
-    Tabs.setTab(cardHTML, 'dblock1cc');
+    const cardTitle = document.createElement('h4');
+    cardTitle.style.cssText = 'margin: 0 0 10px 0;';
+    cardTitle.textContent = 'Payment Method';
+    cardContainer.appendChild(cardTitle);
 
-    // Add event listener to the add credit card link (scoped to container)
-    const container = document.getElementById('dblock1cc');
-    if (container) {
-      const addCardLink = container.querySelector('[data-action="add-credit-card"]');
-      if (addCardLink) {
-        addCardLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          CreditCard.showAddCreditCardForm();
-        });
-      }
-    }
+    const cardP = document.createElement('p');
+    cardP.style.cssText = 'margin: 5px 0;';
+
+    const cardStrong = document.createElement('strong');
+    cardStrong.textContent = 'Card: ';
+    cardP.appendChild(cardStrong);
+
+    const cardText = document.createTextNode(accountData.funding_source_details.display_string || 'No card on file');
+    cardP.appendChild(cardText);
+
+    cardP.appendChild(document.createTextNode(' ['));
+
+    const addLink = document.createElement('a');
+    addLink.href = '#';
+    addLink.setAttribute('data-action', 'add-credit-card');
+    addLink.textContent = 'add';
+    addLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      CreditCard.showAddCreditCardForm();
+    });
+    cardP.appendChild(addLink);
+
+    cardP.appendChild(document.createTextNode(']'));
+    cardContainer.appendChild(cardP);
+
+    Tabs.setTab(cardContainer, 'dblock1cc');
   }
 }
 
