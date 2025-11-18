@@ -137,21 +137,19 @@ export function showAddCreditCardForm() {
     </div>
   `;
 
-  showPopup('Add Credit Card', formHTML);
+  const popupElement = showPopup('Add Credit Card', formHTML);
 
-  // Add event listeners after popup is created
-  setTimeout(() => {
-    const cancelButton = document.querySelector('#add-cc-form [data-action="cancel"]');
-    const submitButton = document.querySelector('#add-cc-form [data-action="submit"]');
+  // Add event listeners to the popup element
+  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
+  const submitButton = popupElement.querySelector('[data-action="submit"]');
 
-    if (cancelButton) {
-      cancelButton.addEventListener('click', hidePopup);
-    }
+  if (cancelButton) {
+    cancelButton.addEventListener('click', hidePopup);
+  }
 
-    if (submitButton) {
-      submitButton.addEventListener('click', processCreditCardForm);
-    }
-  }, 0);
+  if (submitButton) {
+    submitButton.addEventListener('click', processCreditCardForm);
+  }
 }
 
 /**

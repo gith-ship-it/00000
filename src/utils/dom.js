@@ -33,6 +33,7 @@ export function appendTabPlus(content, targetId, callback) {
  * @param {string} title - Popup title
  * @param {string} content - Popup content (HTML)
  * @param {Object} options - Popup options
+ * @returns {HTMLElement} The popup element for direct event listener attachment
  */
 export function showPopup(title, content, options = {}) {
   const {
@@ -94,6 +95,8 @@ export function showPopup(title, content, options = {}) {
 
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
+
+  return popup;
 }
 
 /**

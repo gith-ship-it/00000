@@ -174,15 +174,13 @@ function displayAccountInfo(accountData) {
     Tabs.setTab(cardHTML, 'dblock1cc');
 
     // Add event listener to the add credit card link
-    setTimeout(() => {
-      const addCardLink = document.querySelector('[data-action="add-credit-card"]');
-      if (addCardLink) {
-        addCardLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          CreditCard.showAddCreditCardForm();
-        });
-      }
-    }, 0);
+    const addCardLink = document.querySelector('[data-action="add-credit-card"]');
+    if (addCardLink) {
+      addCardLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        CreditCard.showAddCreditCardForm();
+      });
+    }
   }
 }
 

@@ -131,21 +131,19 @@ export function showEditCurrencyForm() {
     </div>
   `;
 
-  showPopup('Edit Currency', formHTML);
+  const popupElement = showPopup('Edit Currency', formHTML);
 
-  // Add event listeners after popup is created
-  setTimeout(() => {
-    const cancelButton = document.querySelector('#edit-currency-form [data-action="cancel"]');
-    const submitButton = document.querySelector('#edit-currency-form [data-action="submit"]');
+  // Add event listeners to the popup element
+  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
+  const submitButton = popupElement.querySelector('[data-action="submit"]');
 
-    if (cancelButton) {
-      cancelButton.addEventListener('click', hidePopup);
-    }
+  if (cancelButton) {
+    cancelButton.addEventListener('click', hidePopup);
+  }
 
-    if (submitButton) {
-      submitButton.addEventListener('click', processEditCurrency);
-    }
-  }, 0);
+  if (submitButton) {
+    submitButton.addEventListener('click', processEditCurrency);
+  }
 }
 
 /**
@@ -192,21 +190,19 @@ export function showEditTimezoneForm() {
     </div>
   `;
 
-  showPopup('Edit Timezone', formHTML);
+  const popupElement = showPopup('Edit Timezone', formHTML);
 
-  // Add event listeners after popup is created
-  setTimeout(() => {
-    const cancelButton = document.querySelector('#edit-timezone-form [data-action="cancel"]');
-    const submitButton = document.querySelector('#edit-timezone-form [data-action="submit"]');
+  // Add event listeners to the popup element
+  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
+  const submitButton = popupElement.querySelector('[data-action="submit"]');
 
-    if (cancelButton) {
-      cancelButton.addEventListener('click', hidePopup);
-    }
+  if (cancelButton) {
+    cancelButton.addEventListener('click', hidePopup);
+  }
 
-    if (submitButton) {
-      submitButton.addEventListener('click', processEditTimezone);
-    }
-  }, 0);
+  if (submitButton) {
+    submitButton.addEventListener('click', processEditTimezone);
+  }
 }
 
 /**
