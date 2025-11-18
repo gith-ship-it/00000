@@ -196,11 +196,11 @@ export function showAddBusinessManagerForm() {
       </div>
 
       <div style="text-align: right;">
-        <button onclick="window.hidePluginPopup()"
+        <button data-action="cancel"
                 style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
           Cancel
         </button>
-        <button onclick="window.processAddBusinessManager()"
+        <button data-action="submit"
                 style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
           Create BM
         </button>
@@ -209,6 +209,20 @@ export function showAddBusinessManagerForm() {
   `;
 
   showPopup('Add Business Manager', formHTML);
+
+  // Add event listeners after popup is created
+  setTimeout(() => {
+    const cancelButton = document.querySelector('#add-bm-form [data-action="cancel"]');
+    const submitButton = document.querySelector('#add-bm-form [data-action="submit"]');
+
+    if (cancelButton) {
+      cancelButton.addEventListener('click', hidePopup);
+    }
+
+    if (submitButton) {
+      submitButton.addEventListener('click', processAddBusinessManager);
+    }
+  }, 0);
 }
 
 /**

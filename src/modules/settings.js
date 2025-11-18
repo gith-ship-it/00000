@@ -119,11 +119,11 @@ export function showEditCurrencyForm() {
       </div>
 
       <div style="text-align: right;">
-        <button onclick="window.hidePluginPopup()"
+        <button data-action="cancel"
                 style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
           Cancel
         </button>
-        <button onclick="window.processEditCurrency()"
+        <button data-action="submit"
                 style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
           Update Currency
         </button>
@@ -132,6 +132,20 @@ export function showEditCurrencyForm() {
   `;
 
   showPopup('Edit Currency', formHTML);
+
+  // Add event listeners after popup is created
+  setTimeout(() => {
+    const cancelButton = document.querySelector('#edit-currency-form [data-action="cancel"]');
+    const submitButton = document.querySelector('#edit-currency-form [data-action="submit"]');
+
+    if (cancelButton) {
+      cancelButton.addEventListener('click', hidePopup);
+    }
+
+    if (submitButton) {
+      submitButton.addEventListener('click', processEditCurrency);
+    }
+  }, 0);
 }
 
 /**
@@ -166,11 +180,11 @@ export function showEditTimezoneForm() {
       </div>
 
       <div style="text-align: right;">
-        <button onclick="window.hidePluginPopup()"
+        <button data-action="cancel"
                 style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
           Cancel
         </button>
-        <button onclick="window.processEditTimezone()"
+        <button data-action="submit"
                 style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
           Update Timezone
         </button>
@@ -179,6 +193,20 @@ export function showEditTimezoneForm() {
   `;
 
   showPopup('Edit Timezone', formHTML);
+
+  // Add event listeners after popup is created
+  setTimeout(() => {
+    const cancelButton = document.querySelector('#edit-timezone-form [data-action="cancel"]');
+    const submitButton = document.querySelector('#edit-timezone-form [data-action="submit"]');
+
+    if (cancelButton) {
+      cancelButton.addEventListener('click', hidePopup);
+    }
+
+    if (submitButton) {
+      submitButton.addEventListener('click', processEditTimezone);
+    }
+  }, 0);
 }
 
 /**
