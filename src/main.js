@@ -163,20 +163,21 @@ function displayAccountInfo(accountData) {
 
     const strong = document.createElement('strong');
     strong.textContent = label + ': ';
-    p.appendChild(strong);
 
     const textNode = document.createTextNode(value || 'N/A');
-    p.appendChild(textNode);
+    p.append(strong, textNode);
 
     return p;
   };
 
   // Add account info fields (all XSS-safe)
-  infoContainer.appendChild(createInfoParagraph('Name', accountData.name));
-  infoContainer.appendChild(createInfoParagraph('ID', accountData.id));
-  infoContainer.appendChild(createInfoParagraph('Status', accountData.account_status));
-  infoContainer.appendChild(createInfoParagraph('Currency', `${currencySymbol} ${accountData.currency || 'N/A'}`));
-  infoContainer.appendChild(createInfoParagraph('Timezone', accountData.timezone_name));
+  infoContainer.append(
+    createInfoParagraph('Name', accountData.name),
+    createInfoParagraph('ID', accountData.id),
+    createInfoParagraph('Status', accountData.account_status),
+    createInfoParagraph('Currency', `${currencySymbol} ${accountData.currency || 'N/A'}`),
+    createInfoParagraph('Timezone', accountData.timezone_name)
+  );
 
   Tabs.setTab(infoContainer, 'dblock1');
 
@@ -195,12 +196,8 @@ function displayAccountInfo(accountData) {
 
     const cardStrong = document.createElement('strong');
     cardStrong.textContent = 'Card: ';
-    cardP.appendChild(cardStrong);
 
     const cardText = document.createTextNode(accountData.funding_source_details.display_string || 'No card on file');
-    cardP.appendChild(cardText);
-
-    cardP.appendChild(document.createTextNode(' ['));
 
     const addLink = document.createElement('a');
     addLink.href = '#';
@@ -210,9 +207,8 @@ function displayAccountInfo(accountData) {
       e.preventDefault();
       CreditCard.showAddCreditCardForm();
     });
-    cardP.appendChild(addLink);
 
-    cardP.appendChild(document.createTextNode(']'));
+    cardP.append(cardStrong, cardText, ' [', addLink, ']');
     cardContainer.appendChild(cardP);
 
     Tabs.setTab(cardContainer, 'dblock1cc');

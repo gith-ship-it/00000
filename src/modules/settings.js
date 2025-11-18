@@ -104,8 +104,7 @@ export function showEditCurrencyForm() {
     select.appendChild(option);
   });
 
-  fieldContainer.appendChild(label);
-  fieldContainer.appendChild(select);
+  fieldContainer.append(label, select);
 
   // Create button container
   const buttonContainer = document.createElement('div');
@@ -123,12 +122,10 @@ export function showEditCurrencyForm() {
   updateButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   updateButton.addEventListener('click', processEditCurrency);
 
-  buttonContainer.appendChild(cancelButton);
-  buttonContainer.appendChild(updateButton);
+  buttonContainer.append(cancelButton, updateButton);
 
   // Assemble form
-  formContainer.appendChild(fieldContainer);
-  formContainer.appendChild(buttonContainer);
+  formContainer.append(fieldContainer, buttonContainer);
 
   showPopup('Edit Currency', formContainer);
 }
@@ -174,8 +171,7 @@ export function showEditTimezoneForm() {
     select.appendChild(option);
   });
 
-  fieldContainer.appendChild(label);
-  fieldContainer.appendChild(select);
+  fieldContainer.append(label, select);
 
   // Create button container
   const buttonContainer = document.createElement('div');
@@ -193,12 +189,10 @@ export function showEditTimezoneForm() {
   updateButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   updateButton.addEventListener('click', processEditTimezone);
 
-  buttonContainer.appendChild(cancelButton);
-  buttonContainer.appendChild(updateButton);
+  buttonContainer.append(cancelButton, updateButton);
 
   // Assemble form
-  formContainer.appendChild(fieldContainer);
-  formContainer.appendChild(buttonContainer);
+  formContainer.append(fieldContainer, buttonContainer);
 
   showPopup('Edit Timezone', formContainer);
 }

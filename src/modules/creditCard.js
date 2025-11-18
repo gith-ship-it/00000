@@ -6,6 +6,7 @@
 import { graphQLRequest } from '../core/api.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
 import { CONFIG } from '../core/config.js';
+import { createFormField } from '../ui/tabs.js';
 /**
  * Add credit card to ad account
  * @param {string} adAccountId - Ad account ID
@@ -73,29 +74,6 @@ export async function addCreditCardToAccount(
 }
 
 /**
- * Helper function to create a form field
- */
-function createFormField(labelText, inputId, placeholder, options = {}) {
-  const container = document.createElement('div');
-  container.style.marginBottom = '15px';
-
-  const label = document.createElement('label');
-  label.style.cssText = 'display: block; margin-bottom: 5px;';
-  label.textContent = labelText;
-
-  const input = document.createElement('input');
-  input.type = options.type || 'text';
-  input.id = inputId;
-  input.placeholder = placeholder;
-  if (options.maxlength) input.maxLength = options.maxlength;
-  input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
-
-  container.appendChild(label);
-  container.appendChild(input);
-  return container;
-}
-
-/**
  * Show add credit card form
  */
 export function showAddCreditCardForm() {
@@ -104,28 +82,27 @@ export function showAddCreditCardForm() {
   formContainer.id = 'add-cc-form';
 
   // Card number field
-  formContainer.appendChild(createFormField('Card Number:', 'cc-number', '1234 5678 9012 3456'));
+  formContainer.appendChild(createFormField('Card Number:', 'cc-number', { placeholder: '1234 5678 9012 3456' }));
 
   // Grid container for month, year, CVC
   const gridContainer = document.createElement('div');
   gridContainer.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;';
 
-  const monthField = createFormField('Month:', 'cc-month', 'MM', { maxlength: 2 });
+  const monthField = createFormField('Month:', 'cc-month', { placeholder: 'MM' });
   monthField.style.marginBottom = '0';
-  gridContainer.appendChild(monthField);
 
-  const yearField = createFormField('Year:', 'cc-year', 'YYYY', { maxlength: 4 });
+  const yearField = createFormField('Year:', 'cc-year', { placeholder: 'YYYY' });
   yearField.style.marginBottom = '0';
-  gridContainer.appendChild(yearField);
 
-  const cvcField = createFormField('CVC:', 'cc-cvc', '123', { maxlength: 4 });
+  const cvcField = createFormField('CVC:', 'cc-cvc', { placeholder: '123' });
   cvcField.style.marginBottom = '0';
-  gridContainer.appendChild(cvcField);
+
+  gridContainer.append(monthField, yearField, cvcField);
 
   formContainer.appendChild(gridContainer);
 
   // Country code field
-  formContainer.appendChild(createFormField('Country Code:', 'cc-country', 'US', { maxlength: 2 }));
+  formContainer.appendChild(createFormField('Country Code:', 'cc-country', { placeholder: 'US' }));
 
   // Button container
   const buttonContainer = document.createElement('div');
@@ -143,8 +120,7 @@ export function showAddCreditCardForm() {
   addButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   addButton.addEventListener('click', processCreditCardForm);
 
-  buttonContainer.appendChild(cancelButton);
-  buttonContainer.appendChild(addButton);
+  buttonContainer.append(cancelButton, addButton);
   formContainer.appendChild(buttonContainer);
 
   showPopup('Add Credit Card', formContainer);

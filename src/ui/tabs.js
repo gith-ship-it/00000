@@ -168,8 +168,7 @@ export function createFormField(label, id, options = {}) {
   input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;';
 
   // Assemble the form field
-  container.appendChild(labelElement);
-  container.appendChild(input);
+  container.append(labelElement, input);
 
   return container;
 }

@@ -193,8 +193,7 @@ export function showAddBusinessManagerForm() {
   input.placeholder = 'Enter Business Manager name';
   input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
 
-  fieldContainer.appendChild(label);
-  fieldContainer.appendChild(input);
+  fieldContainer.append(label, input);
 
   // Create button container
   const buttonContainer = document.createElement('div');
@@ -212,12 +211,10 @@ export function showAddBusinessManagerForm() {
   createButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   createButton.addEventListener('click', processAddBusinessManager);
 
-  buttonContainer.appendChild(cancelButton);
-  buttonContainer.appendChild(createButton);
+  buttonContainer.append(cancelButton, createButton);
 
   // Assemble form
-  formContainer.appendChild(fieldContainer);
-  formContainer.appendChild(buttonContainer);
+  formContainer.append(fieldContainer, buttonContainer);
 
   showPopup('Add Business Manager', formContainer);
 }
