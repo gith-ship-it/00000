@@ -103,9 +103,8 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
       }
     };
 
-    // TODO: Replace with actual doc_id from Facebook GraphQL API
     const response = await graphQLRequest(
-      '5123456789012345',
+      CONFIG.GRAPHQL_DOC_IDS.AD_ACCOUNT_REMOVE_ACCESS,
       variables,
       'RemoveAdAccountAccessMutation',
       accessToken
