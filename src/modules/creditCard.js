@@ -4,7 +4,7 @@
  */
 
 import { graphQLRequest } from '../utils/http.js';
-import { showPopup, hidePopup, appendTab } from '../utils/dom.js';
+import { showPopup, hidePopup } from '../utils/dom.js';
 
 import { CONFIG } from '../core/config.js';
 /**
