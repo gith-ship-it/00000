@@ -6,7 +6,12 @@ yarn.lock
 dist/
 build/
 *.min.js
+*.min.js.map
 *.bundle.js
+
+# Exception: Keep built files in extension directory
+!extension/*.min.js
+!extension/*.min.js.map
 
 # Development files
 .DS_Store

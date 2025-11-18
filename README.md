@@ -45,10 +45,18 @@ fbacc/
 │   │   ├── http.js          # HTTP request utilities
 │   │   └── dom.js           # DOM manipulation utilities
 │   └── main.js              # Main entry point
+├── extension/               # Browser extension files
+│   ├── manifest.json        # Extension manifest (Manifest V3)
+│   ├── popup.html          # Extension popup interface
+│   ├── popup.js            # Popup logic
+│   ├── icons/              # Extension icons
+│   └── *.min.js            # Built plugin (copied during build)
 ├── dist/                    # Built/bundled files (generated)
+├── scripts/                 # Build and utility scripts
 ├── package.json
 ├── rollup.config.js         # Build configuration
-└── README.md
+├── README.md
+└── EXTENSION_INSTALL.md     # Extension installation guide
 ```
 
 ## Installation
@@ -81,11 +89,17 @@ npm run build:dev
 # Production build (minified)
 npm run build:prod
 
+# Build for browser extension (recommended)
+npm run build:extension
+
 # Watch mode (auto-rebuild on changes)
 npm run watch
 
 # Clean build directory
 npm run clean
+
+# Clean all (including extension files)
+npm run clean:all
 ```
 
 ### Code Quality
@@ -106,14 +120,27 @@ The build process generates:
 
 ## Usage
 
-### As a Browser Extension
+### As a Browser Extension (Recommended)
 
-1. Build the plugin:
+**完整的瀏覽器擴充功能現已可用！**
+
+1. Build the extension:
 ```bash
-npm run build:prod
+npm run build:extension
 ```
 
-2. Load `dist/fbacc-plugin.min.js` in your browser extension manifest
+2. Load in your browser:
+   - **Chrome/Edge/Brave**: Go to `chrome://extensions/`, enable Developer Mode, click "Load unpacked", select the `extension` folder
+   - **Firefox**: Go to `about:debugging`, click "Load Temporary Add-on", select `extension/manifest.json`
+
+**📖 詳細安裝指南**: 請參考 [EXTENSION_INSTALL.md](EXTENSION_INSTALL.md)
+
+This provides a complete browser extension with:
+- ✅ Popup interface for easy access
+- ✅ Automatic script injection on Facebook pages
+- ✅ Keyboard shortcuts (Ctrl+Shift+F)
+- ✅ Proper permissions and security
+- ✅ Beautiful gradient icons
 
 ### As a Userscript
 
