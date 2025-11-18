@@ -3,7 +3,7 @@
  * Handles operations related to Facebook ad accounts
  */
 
-import { graphAPIRequest, graphQLRequest, batchGraphAPIRequests } from '../core/api.js';
+import { graphAPIRequest, graphQLRequest } from '../core/api.js';
 import { CONFIG } from '../core/config.js';
 
 /**
@@ -156,36 +156,36 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
  */
 export async function getAdAccountDetails(accountId, accessToken) {
   try {
-    // Use batch API to fetch both sets of fields in a single network request
-    const batchRequests = [
-      {
-        method: 'GET',
-        endpoint: `act_${accountId}`,
-        params: { fields: BASIC_AD_ACCOUNT_FIELDS.join(',') }
-      },
-      {
-        method: 'GET',
-        endpoint: `act_${accountId}`,
-        params: { fields: SENSITIVE_AD_ACCOUNT_FIELDS.join(',') }
-      }
-    ];
+    // Execute both API calls in parallel using Promise.allSettled
+    // This improves performance while avoiding the problematic batch API
+    const [basicResult, sensitiveResult] = await Promise.allSettled([
+      graphAPIRequest(`act_${accountId}`, {
+        params: {
+          fields: BASIC_AD_ACCOUNT_FIELDS.join(',')
+        },
+        accessToken
+      }),
+      graphAPIRequest(`act_${accountId}`, {
+        params: {
+          fields: SENSITIVE_AD_ACCOUNT_FIELDS.join(',')
+        },
+        accessToken
+      })
+    ]);
 
-    const [basicResult, sensitiveResult] = await batchGraphAPIRequests(batchRequests, accessToken);
-
-    // Process basic fields (should always succeed)
-    if (!basicResult.success) {
-      throw new Error(basicResult.error?.error?.message || 'Failed to fetch basic account details');
+    // Basic fields are required - throw error if they fail
+    if (basicResult.status === 'rejected') {
+      throw basicResult.reason;
     }
 
-    let data = basicResult.data;
+    let data = basicResult.value;
 
-    // Process sensitive fields (may fail due to permissions)
-    if (sensitiveResult.success) {
-      // Merge sensitive fields if successful
-      data = { ...data, ...sensitiveResult.data };
+    // Sensitive fields are optional - merge if successful, warn if not
+    if (sensitiveResult.status === 'fulfilled') {
+      data = { ...data, ...sensitiveResult.value };
     } else {
-      // Log warning but don't fail - these fields are optional
-      const errorMsg = sensitiveResult.error?.error?.message || 'Permission denied';
+      // Log warning but don't fail - these fields require special permissions
+      const errorMsg = sensitiveResult.reason?.message || 'Permission denied';
       console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', errorMsg);
     }
 
