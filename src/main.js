@@ -173,13 +173,16 @@ function displayAccountInfo(accountData) {
 
     Tabs.setTab(cardHTML, 'dblock1cc');
 
-    // Add event listener to the add credit card link
-    const addCardLink = document.querySelector('[data-action="add-credit-card"]');
-    if (addCardLink) {
-      addCardLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        CreditCard.showAddCreditCardForm();
-      });
+    // Add event listener to the add credit card link (scoped to container)
+    const container = document.getElementById('dblock1cc');
+    if (container) {
+      const addCardLink = container.querySelector('[data-action="add-credit-card"]');
+      if (addCardLink) {
+        addCardLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          CreditCard.showAddCreditCardForm();
+        });
+      }
     }
   }
 }
