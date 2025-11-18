@@ -5,33 +5,33 @@
 
 /**
  * Append content to a tab
- * @param {string|HTMLElement} content - Content to append (HTML string or DOM element)
+ * @param {HTMLElement|Node} content - DOM element or node to append
  * @param {string} tabId - Tab element ID
+ *
+ * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
+ * Do not pass HTML strings. Use createElement() to build your content safely.
  */
 export function appendTab(content, tabId) {
   const element = document.getElementById(tabId);
-  if (element) {
-    if (typeof content === 'string') {
-      // Create a temporary container to parse HTML safely
-      const temp = document.createElement('div');
-      temp.innerHTML = content;
-      // Append all child nodes
-      while (temp.firstChild) {
-        element.appendChild(temp.firstChild);
-      }
-    } else if (content instanceof HTMLElement) {
-      element.appendChild(content);
-    }
-  } else {
+  if (!element) {
     console.warn(`Tab element with ID "${tabId}" not found`);
+    return;
+  }
+
+  if (content instanceof Node) {
+    element.appendChild(content);
+  } else {
+    console.error('appendTab: content must be a DOM Node for security. HTML strings are not supported.');
   }
 }
 
 /**
  * Append content to tab with callback
- * @param {string} content - HTML content to append
+ * @param {HTMLElement|Node} content - DOM element or node to append
  * @param {string} tabId - Tab element ID
  * @param {Function} callback - Callback after appending
+ *
+ * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
  */
 export function appendTabPlus(content, tabId, callback) {
   appendTab(content, tabId);
@@ -54,33 +54,35 @@ export function clearTab(tabId) {
 
 /**
  * Set tab content (replace existing content)
- * @param {string|HTMLElement} content - Content to set (HTML string or DOM element)
+ * @param {HTMLElement|Node} content - DOM element or node to set
  * @param {string} tabId - Tab element ID
+ *
+ * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
+ * Do not pass HTML strings. Use createElement() to build your content safely.
  */
 export function setTab(content, tabId) {
   const element = document.getElementById(tabId);
-  if (element) {
-    // Clear existing content
-    element.innerHTML = '';
+  if (!element) {
+    console.warn(`Tab element with ID "${tabId}" not found`);
+    return;
+  }
 
-    if (typeof content === 'string') {
-      // Create a temporary container to parse HTML safely
-      const temp = document.createElement('div');
-      temp.innerHTML = content;
-      // Append all child nodes
-      while (temp.firstChild) {
-        element.appendChild(temp.firstChild);
-      }
-    } else if (content instanceof HTMLElement) {
-      element.appendChild(content);
-    }
+  // Clear existing content safely
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+
+  if (content instanceof Node) {
+    element.appendChild(content);
+  } else {
+    console.error('setTab: content must be a DOM Node for security. HTML strings are not supported.');
   }
 }
 
 /**
  * Create a button element
  * @param {string} text - Button text (will be escaped)
- * @param {Function|string} onClick - Click handler function or onclick attribute string
+ * @param {Function} onClick - Click handler function (required for security)
  * @param {Object} options - Button options
  * @returns {HTMLButtonElement} Button DOM element
  */
@@ -113,12 +115,11 @@ export function createButton(text, onClick, options = {}) {
   button.style.cssText = buttonStyle;
   button.className = className;
 
-  // Handle onClick
+  // Only accept function handlers for security (no string onclick attributes)
   if (typeof onClick === 'function') {
     button.onclick = onClick;
-  } else if (typeof onClick === 'string') {
-    // For backwards compatibility with onclick strings
-    button.setAttribute('onclick', onClick);
+  } else if (onClick !== undefined) {
+    console.warn('createButton: onClick must be a function for security. String onclick attributes are not supported.');
   }
 
   return button;

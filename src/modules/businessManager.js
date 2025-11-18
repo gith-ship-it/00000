@@ -187,28 +187,59 @@ export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
  * Show add Business Manager form
  */
 export function showAddBusinessManagerForm() {
-  const formHTML = `
-    <div id="add-bm-form">
-      <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px;">Business Manager Name:</label>
-        <input type="text" id="bm-name" placeholder="Enter Business Manager name"
-               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-      </div>
+  // Create form container using DOM methods (XSS-safe)
+  const formContainer = document.createElement('div');
+  formContainer.id = 'add-bm-form';
 
-      <div style="text-align: right;">
-        <button onclick="window.hidePluginPopup()"
-                style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
-          Cancel
-        </button>
-        <button onclick="window.processAddBusinessManager()"
-                style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Create BM
-        </button>
-      </div>
-    </div>
-  `;
+  // Create input field container
+  const fieldContainer = document.createElement('div');
+  fieldContainer.style.marginBottom = '15px';
 
-  showPopup('Add Business Manager', formHTML);
+  const label = document.createElement('label');
+  label.style.cssText = 'display: block; margin-bottom: 5px;';
+  label.textContent = 'Business Manager Name:';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.id = 'bm-name';
+  input.placeholder = 'Enter Business Manager name';
+  input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;';
+
+  fieldContainer.appendChild(label);
+  fieldContainer.appendChild(input);
+
+  // Create button container
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.textAlign = 'right';
+
+  const cancelButton = document.createElement('button');
+  cancelButton.textContent = 'Cancel';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.onclick = () => {
+    if (window.hidePluginPopup) {
+      window.hidePluginPopup();
+    } else {
+      hidePopup();
+    }
+  };
+
+  const createButton = document.createElement('button');
+  createButton.textContent = 'Create BM';
+  createButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  createButton.onclick = () => {
+    if (window.processAddBusinessManager) {
+      window.processAddBusinessManager();
+    }
+  };
+
+  buttonContainer.appendChild(cancelButton);
+  buttonContainer.appendChild(createButton);
+
+  // Assemble form
+  formContainer.appendChild(fieldContainer);
+  formContainer.appendChild(buttonContainer);
+
+  showPopup('Add Business Manager', formContainer);
 }
 
 /**

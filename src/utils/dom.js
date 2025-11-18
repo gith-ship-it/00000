@@ -5,31 +5,33 @@
 
 /**
  * Append content to a tab/element
- * @param {string|HTMLElement} content - Content to append (HTML string or DOM element)
+ * @param {HTMLElement|Node} content - DOM element or node to append
  * @param {string} targetId - Target element ID
+ *
+ * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
+ * Do not pass HTML strings. Use createElement() to build your content safely.
  */
 export function appendTab(content, targetId) {
   const element = document.getElementById(targetId);
-  if (element) {
-    if (typeof content === 'string') {
-      // Create a temporary container to parse HTML safely
-      const temp = document.createElement('div');
-      temp.innerHTML = content;
-      // Append all child nodes
-      while (temp.firstChild) {
-        element.appendChild(temp.firstChild);
-      }
-    } else if (content instanceof HTMLElement) {
-      element.appendChild(content);
-    }
+  if (!element) {
+    console.warn(`Element with ID "${targetId}" not found`);
+    return;
+  }
+
+  if (content instanceof Node) {
+    element.appendChild(content);
+  } else {
+    console.error('appendTab: content must be a DOM Node for security. HTML strings are not supported.');
   }
 }
 
 /**
  * Append content with additional processing
- * @param {string} content - HTML content to append
+ * @param {HTMLElement|Node} content - DOM element or node to append
  * @param {string} targetId - Target element ID
  * @param {Function} callback - Optional callback after append
+ *
+ * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
  */
 export function appendTabPlus(content, targetId, callback) {
   appendTab(content, targetId);
@@ -40,9 +42,12 @@ export function appendTabPlus(content, targetId, callback) {
 
 /**
  * Create and show a modal/popup
- * @param {string} title - Popup title (will be escaped)
- * @param {string} content - Popup content (HTML - must be sanitized by caller if contains user data)
+ * @param {string} title - Popup title (will be safely escaped)
+ * @param {HTMLElement|Node} content - DOM element or node for popup content
  * @param {Object} options - Popup options
+ *
+ * SECURITY: This function only accepts DOM elements/nodes for content to prevent XSS attacks.
+ * Build your content using createElement() and DOM methods, not HTML strings.
  */
 export function showPopup(title, content, options = {}) {
   const {
@@ -99,8 +104,16 @@ export function showPopup(title, content, options = {}) {
 
   // Create content container
   const contentContainer = document.createElement('div');
-  // Note: innerHTML is used here, but caller must ensure content is sanitized
-  contentContainer.innerHTML = content;
+  // Only accept DOM nodes for security
+  if (content instanceof Node) {
+    contentContainer.appendChild(content);
+  } else {
+    console.error('showPopup: content must be a DOM Node for security. HTML strings are not supported.');
+    const errorMsg = document.createElement('p');
+    errorMsg.textContent = 'Error: Invalid content provided';
+    errorMsg.style.color = 'red';
+    contentContainer.appendChild(errorMsg);
+  }
 
   // Assemble the popup
   headerContainer.appendChild(titleElement);
