@@ -51,17 +51,7 @@ function initialize() {
 
   // Check if we're on a valid page
   if (!isValidPath()) {
-    console.log('Not on ads manager page, checking if on Facebook...');
-
-    if (window.location.host.indexOf('facebook.com') > -1) {
-      // Redirect to ads manager
-      window.location.href = '/adsmanager/manage/campaigns';
-    } else {
-      // Ask user to open Facebook ads manager
-      if (confirm('Are you sure you want to open Facebook Ads Manager?')) {
-        window.location.href = 'https://www.facebook.com/adsmanager/manage/campaigns';
-      }
-    }
+    console.log('Not on ads manager page. Plugin will remain inactive until you navigate to ads manager.');
     return;
   }
 
@@ -217,8 +207,15 @@ function displayAccountInfo(accountData) {
 
 /**
  * Expose API to window object for backward compatibility
+ * WARNING: This function exposes internal APIs to the global namespace.
+ * Only use this if you need backward compatibility with legacy code.
+ * It is NOT called automatically to prevent namespace pollution.
+ *
+ * To use: Call window.FBACCPlugin.exposeGlobalAPI() manually if needed.
  */
 function exposeGlobalAPI() {
+  console.warn('FBACCPlugin: exposeGlobalAPI() is deprecated and pollutes the global namespace. Use the FBACCPlugin namespace instead.');
+
   // Core
   window.PluginState = PluginState;
   window.CONFIG = CONFIG;
@@ -280,14 +277,55 @@ function exposeGlobalAPI() {
 (function() {
   console.log('Facebook Ads Manager Plugin loading...');
 
+  // Expose a single namespaced API instead of polluting global namespace
+  window.FBACCPlugin = {
+    // Core state and config (read-only access recommended)
+    getState: () => ({ ...PluginState }),
+    getConfig: () => ({ ...CONFIG }),
+
+    // Auth methods
+    Auth: {
+      getAccessToken: Auth.getAccessToken,
+      checkAuth: Auth.checkAuth
+    },
+
+    // Popup methods
+    Popup: {
+      close: Popup.mainclose,
+      hide: Popup.mainhide,
+      unhide: Popup.mainunhide,
+      toggle: Popup.togglePluginPopup,
+      show: Popup.showPluginPopup,
+      hidePopup: Popup.hidePluginPopup
+    },
+
+    // Utilities
+    Utils: {
+      getCookie: Helpers.getCookie,
+      getURLParameter: Helpers.getURLParameter,
+      copyToClipboard: Helpers.copyToClipboard,
+      shadowText: Helpers.shadowText,
+      getJSON: HTTP.getJSON
+    },
+
+    // Feature modules
+    AdAccount,
+    CreditCard,
+    Fanpage,
+    BusinessManager,
+    Settings,
+
+    // For backward compatibility only (deprecated)
+    exposeGlobalAPI,
+
+    // Version info
+    version: CONFIG.VERSION
+  };
+
   // Wait for DOM to be ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      exposeGlobalAPI();
-      initialize();
-    });
+    document.addEventListener('DOMContentLoaded', initialize);
   } else {
-    exposeGlobalAPI();
     initialize();
   }
 })();

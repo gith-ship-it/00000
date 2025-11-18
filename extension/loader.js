@@ -22,18 +22,15 @@
     console.error('[FBACC Plugin] Failed to load plugin script');
   };
 
+  // Add success handler that cleans up the script element
   script.onload = function() {
     console.log('[FBACC Plugin] Plugin script loaded successfully');
+    // Remove the script element after injection to clean up DOM
+    // The script will continue to execute even after the element is removed
+    script.remove();
   };
 
   // Inject the script into the page's main world
   // Use document.head for better reliability, fall back to documentElement
   (document.head || document.documentElement).appendChild(script);
-
-  // Optional: Remove the script element after injection to clean up DOM
-  // The script will continue to execute even after the element is removed
-  script.onload = function() {
-    console.log('[FBACC Plugin] Plugin script loaded successfully');
-    script.remove();
-  };
 })();
