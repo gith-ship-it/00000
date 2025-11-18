@@ -6,6 +6,9 @@
 export const CONFIG = {
   VERSION: '6.4',
 
+  // Facebook Graph API version
+  FB_API_VERSION: 'v19.0',
+
   // Valid paths for the plugin to activate
   VALID_PATHS: [
     '/adsmanager/manage/campaigns',
@@ -14,6 +17,33 @@ export const CONFIG = {
     '/adsmanager/manage/ads',
     '/adsmanager/manage/adsets'
   ],
+
+  // Facebook GraphQL Document IDs
+  // Note: These may change when Facebook updates their API
+  GRAPHQL_DOC_IDS: {
+    // Ad Account Operations
+    AD_ACCOUNT_APPEAL: '5197966936890203',
+    AD_ACCOUNT_DELETE: '4787981637941330',
+
+    // Fanpage Operations
+    PAGE_APPEAL: '5197966936890203',
+    PAGE_DELETE: '4899485650107392',
+    PAGE_UNHIDE: '4920939114687785',
+
+    // Business Manager Operations
+    BM_CREATE: '4787981637941333',
+    BM_ADD_USER: '4787981637941334',
+    BM_ADD_AD_ACCOUNT: '4787981637941335',
+    BM_REQUEST_AD_ACCOUNT: '4787981637941336',
+
+    // Credit Card Operations
+    ADD_CREDIT_CARD: '4896364773778784'
+  },
+
+  // Cookie names
+  COOKIES: {
+    USER_ID: 'i_user'
+  },
 
   // Currency symbols mapping
   CURRENCY_SYMBOLS: {

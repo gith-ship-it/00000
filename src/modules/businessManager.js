@@ -5,6 +5,7 @@
 
 import { postFormData } from '../utils/http.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
+import { CONFIG } from '../core/config.js';
 
 /**
  * Add Business Manager
@@ -28,7 +29,7 @@ export async function addBusinessManager(bmName, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'BusinessManagerCreateMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941333'); // Example doc_id
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_CREATE); // Example doc_id
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -73,7 +74,7 @@ export async function addUserToBusinessManager(bmId, userId, role, accessToken) 
 
     urlencoded.append('fb_api_req_friendly_name', 'BusinessAddUserMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941334'); // Example doc_id
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_ADD_USER); // Example doc_id
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -117,7 +118,7 @@ export async function addAdAccountToBusinessManager(bmId, adAccountId, accessTok
 
     urlencoded.append('fb_api_req_friendly_name', 'BusinessAddAdAccountMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941335'); // Example doc_id
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_ADD_AD_ACCOUNT); // Example doc_id
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -161,7 +162,7 @@ export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'BusinessRequestAdAccountAccessMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941336'); // Example doc_id
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.BM_REQUEST_AD_ACCOUNT); // Example doc_id
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);

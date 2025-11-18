@@ -5,6 +5,7 @@
 
 import { postFormData } from '../utils/http.js';
 
+import { CONFIG } from '../core/config.js';
 /**
  * Appeal/request review for Facebook page
  * @param {string} pageId - Page ID
@@ -26,7 +27,7 @@ export async function appealFanpage(pageId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'useAdAccountALRAppealMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '5197966936890203');
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.PAGE_APPEAL);
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -67,7 +68,7 @@ export async function deleteFanpage(pageId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'usePagesCometDeletePageMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4899485650107392');
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.PAGE_DELETE);
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -109,7 +110,7 @@ export async function unhideFanpage(pageId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'usePagesCometEditPageVisibilityMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4920939114687785');
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.PAGE_UNHIDE);
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -148,7 +149,7 @@ export async function getPageDetails(pageId, accessToken) {
       'is_webhooks_subscribed'
     ];
 
-    const url = `https://graph.facebook.com/v18.0/${pageId}?fields=${fields.join(',')}&access_token=${accessToken}`;
+    const url = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/${pageId}?fields=${fields.join(',')}&access_token=${accessToken}`;
 
     const response = await fetch(url);
     const data = await response.json();

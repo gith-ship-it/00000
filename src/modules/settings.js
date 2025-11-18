@@ -4,8 +4,8 @@
  */
 
 import { postFormData } from '../utils/http.js';
-import { showPopup, hidePopup } from '../utils/dom.js';
 import { CONFIG } from '../core/config.js';
+import { showPopup, hidePopup } from '../utils/dom.js';
 
 /**
  * Update ad account currency
@@ -16,7 +16,7 @@ import { CONFIG } from '../core/config.js';
  */
 export async function updateAccountCurrency(accountId, currency, accessToken) {
   try {
-    const apiUrl = `https://graph.facebook.com/v19.0/act_${accountId}`;
+    const apiUrl = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/act_${accountId}`;
 
     const urlencoded = new URLSearchParams();
     urlencoded.append('currency', currency.toUpperCase());
@@ -61,7 +61,7 @@ export async function updateAccountCurrency(accountId, currency, accessToken) {
  */
 export async function updateAccountTimezone(accountId, timezoneId, accessToken) {
   try {
-    const apiUrl = `https://graph.facebook.com/v19.0/act_${accountId}`;
+    const apiUrl = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/act_${accountId}`;
 
     const urlencoded = new URLSearchParams();
     urlencoded.append('timezone_id', timezoneId);

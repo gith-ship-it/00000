@@ -4,30 +4,17 @@
  */
 
 /**
- * Make a GET request and parse JSON response
+ * Make a GET request and parse JSON response using fetch API
  * @param {string} url - URL to fetch
- * @param {Function} callback - Callback function(error, data)
  * @param {string} type - Request type (default: 'GET')
+ * @returns {Promise<any>} Parsed JSON response
  */
-export function getJSON(url, callback, type = 'GET') {
-  const xhr = new XMLHttpRequest();
-  xhr.open(type, url, true);
-  xhr.responseType = 'json';
-
-  xhr.onload = function() {
-    const status = xhr.status;
-    if (status === 200) {
-      callback(null, xhr.response);
-    } else {
-      callback(status, xhr.response);
-    }
-  };
-
-  xhr.onerror = function() {
-    callback('Network error', null);
-  };
-
-  xhr.send();
+export async function getJSON(url, type = 'GET') {
+  const response = await fetch(url, { method: type });
+  if (!response.ok) {
+    throw new Error(\`HTTP error! status: \${response.status}\`);
+  }
+  return await response.json();
 }
 
 /**
@@ -49,7 +36,7 @@ export async function postFormData(url, data, headers = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(\`HTTP error! status: \${response.status}\`);
   }
 
   return await response.json();

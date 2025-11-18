@@ -98,15 +98,13 @@ function initialize() {
  */
 function setupKeyboardShortcuts() {
   document.addEventListener('keydown', function(evt) {
-    evt = evt || window.event;
-
     // ESC key - close popup
-    if (evt.keyCode === 27) {
+    if (evt.key === 'Escape') {
       Popup.mainclose();
     }
 
     // Ctrl/Cmd + Shift + F - toggle popup
-    if ((evt.ctrlKey || evt.metaKey) && evt.shiftKey && evt.keyCode === 70) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.shiftKey && evt.key === 'f') {
       evt.preventDefault();
       Popup.togglePluginPopup();
     }
@@ -195,7 +193,7 @@ function exposeGlobalAPI() {
   window.mainunhide = Popup.mainunhide;
   window.togglePluginPopup = Popup.togglePluginPopup;
   window.showPluginPopup = Popup.showPluginPopup;
-  window.hidePluginPopup = Popup.hidePopup;
+  window.hidePluginPopup = Popup.hidePluginPopup;
 
   // Tabs
   window.appendtab = Tabs.appendTab;

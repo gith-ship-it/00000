@@ -6,6 +6,7 @@
 import { graphQLRequest } from '../utils/http.js';
 import { showPopup, hidePopup, appendTab } from '../utils/dom.js';
 
+import { CONFIG } from '../core/config.js';
 /**
  * Add credit card to ad account
  * @param {string} adAccountId - Ad account ID
@@ -48,13 +49,13 @@ export async function addCreditCardToAccount(
           }
         },
         actor_id: fbSocialId,
-        client_mutation_id: Math.round(Math.random() * 10).toString()
+        client_mutation_id: Date.now().toString()
       }
     };
 
     urlencoded.append('fb_api_req_friendly_name', 'useFBAAddCreditCardMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4896364773778784');
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.ADD_CREDIT_CARD);
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await fetch('https://www.facebook.com/api/graphql/', {
@@ -124,7 +125,7 @@ export function showAddCreditCardForm() {
       </div>
 
       <div style="text-align: right;">
-        <button onclick="window.cancelAddCreditCard()"
+        <button onclick="window.hidePluginPopup()"
                 style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
           Cancel
         </button>

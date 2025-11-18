@@ -11,8 +11,7 @@
     "watch": "rollup -c --watch",
     "lint": "eslint src/**/*.js",
     "format": "prettier --write \"src/**/*.js\"",
-    "clean": "rimraf dist",
-    "preinstall": "npm install -g rimraf || true"
+    "clean": "rimraf dist"
   },
   "keywords": [
     "facebook",
@@ -22,7 +21,7 @@
     "business-manager",
     "ad-account"
   ],
-  "author": "",
+  "author": "Facebook Ads Manager Plugin Team",
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.0",

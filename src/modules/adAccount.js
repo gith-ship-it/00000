@@ -3,8 +3,9 @@
  * Handles operations related to Facebook ad accounts
  */
 
-import { graphQLRequest, postFormData } from '../utils/http.js';
+import { postFormData } from '../utils/http.js';
 
+import { CONFIG } from '../core/config.js';
 /**
  * Appeal/request review for ad account
  * @param {string} accountId - Ad account ID
@@ -29,7 +30,7 @@ export async function appealAdAccount(accountId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'useAdAccountALRAppealMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '5197966936890203');
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.AD_ACCOUNT_APPEAL);
     urlencoded.append('fb_api_caller_class', 'RelayModern');
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
@@ -71,7 +72,7 @@ export async function deleteAdAccount(adAccountId, accessToken) {
 
     urlencoded.append('fb_api_req_friendly_name', 'AdAccountDeleteMutation');
     urlencoded.append('variables', JSON.stringify(variables));
-    urlencoded.append('doc_id', '4787981637941330');
+    urlencoded.append('doc_id', CONFIG.GRAPHQL_DOC_IDS.AD_ACCOUNT_DELETE);
 
     const response = await postFormData('https://www.facebook.com/api/graphql/', urlencoded);
 
@@ -154,7 +155,7 @@ export async function getAdAccountDetails(accountId, accessToken) {
       'funding_source_details'
     ];
 
-    const url = `https://graph.facebook.com/v18.0/act_${accountId}?fields=${fields.join(',')}&access_token=${accessToken}`;
+    const url = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}/act_${accountId}?fields=${fields.join(',')}&access_token=${accessToken}`;
 
     const response = await fetch(url);
     const data = await response.json();

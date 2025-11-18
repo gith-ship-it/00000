@@ -4,13 +4,14 @@
  */
 
 import { getCookie, getURLParameter } from '../utils/helpers.js';
+import { CONFIG } from './config.js';
 
 /**
  * Check if user is authenticated as page or personal profile
  * @returns {boolean} True if page auth, false if personal profile
  */
 export function checkAuth() {
-  if (getCookie('i_user') !== undefined) {
+  if (getCookie(CONFIG.COOKIES.USER_ID) !== undefined) {
     return true; // Page authentication
   }
   return false; // Personal profile
@@ -31,26 +32,26 @@ export function getAccessToken() {
 
   // Get selected account from URL parameter
   const selectedAccount = getURLParameter('act');
-  const elementIdRegEx = /selected_account_id:"(.*?)"/gi;
-  const tokenRegex = /"EA[A-Za-z0-9]{20,}/gm;
+  const elementIdRegEx = /selected_account_id:"(.*?)"/i;
+  const tokenRegex = /"(EA[A-Za-z0-9]{20,})"/;
 
   for (let i = 0; i < scripts.length; i++) {
     const html = scripts[i].innerHTML;
 
-    // Extract access token
-    if (!token && html.search(tokenRegex) > -1) {
-      const match = html.match(tokenRegex);
-      if (match && match[0]) {
-        token = match[0].substr(1); // Remove leading quote
+    // Extract access token using capturing group
+    if (!token) {
+      const tokenMatch = tokenRegex.exec(html);
+      if (tokenMatch && tokenMatch[1]) {
+        token = tokenMatch[1];
         console.log('Access token found');
       }
     }
 
-    // Extract account ID
-    if (!selectedAccount && !accountId && html.search(elementIdRegEx) > -1) {
-      const match = html.match(elementIdRegEx);
-      if (match && match[0]) {
-        accountId = match[0].split('"')[1];
+    // Extract account ID using capturing group
+    if (!selectedAccount && !accountId) {
+      const accountIdMatch = elementIdRegEx.exec(html);
+      if (accountIdMatch && accountIdMatch[1]) {
+        accountId = accountIdMatch[1];
         console.log('Account ID found:', accountId);
       }
     }

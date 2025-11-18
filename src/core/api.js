@@ -3,12 +3,12 @@
  * Central API management and request handling
  */
 
-import { getAccessToken } from './auth.js';
+import { CONFIG } from './config.js';
 
 /**
  * Facebook Graph API base URL
  */
-export const FB_GRAPH_API_BASE = 'https://graph.facebook.com/v18.0';
+export const FB_GRAPH_API_BASE = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}`;
 
 /**
  * Facebook GraphQL API URL
