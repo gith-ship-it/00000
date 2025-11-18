@@ -43,7 +43,7 @@ export function initPluginPopup() {
     <div style="padding: 15px; border-bottom: 1px solid #ddd;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin: 0; font-size: 16px;">FB Ads Manager Plugin</h3>
-        <button onclick="window.mainclose()"
+        <button data-action="close"
                 style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;">
           &times;
         </button>
@@ -59,6 +59,12 @@ export function initPluginPopup() {
   `;
 
   document.body.appendChild(popup);
+
+  // Add event listener to close button
+  const closeButton = popup.querySelector('[data-action="close"]');
+  if (closeButton) {
+    closeButton.addEventListener('click', mainclose);
+  }
 }
 
 /**

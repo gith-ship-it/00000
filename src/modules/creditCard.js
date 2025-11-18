@@ -109,11 +109,11 @@ export function showAddCreditCardForm() {
       </div>
 
       <div style="text-align: right;">
-        <button onclick="window.hidePluginPopup()"
+        <button data-action="cancel"
                 style="padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">
           Cancel
         </button>
-        <button onclick="window.processCreditCardForm()"
+        <button data-action="submit"
                 style="padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;">
           Add Card
         </button>
@@ -121,7 +121,19 @@ export function showAddCreditCardForm() {
     </div>
   `;
 
-  showPopup('Add Credit Card', formHTML);
+  const popupElement = showPopup('Add Credit Card', formHTML);
+
+  // Add event listeners to the popup element
+  const cancelButton = popupElement.querySelector('[data-action="cancel"]');
+  const submitButton = popupElement.querySelector('[data-action="submit"]');
+
+  if (cancelButton) {
+    cancelButton.addEventListener('click', hidePopup);
+  }
+
+  if (submitButton) {
+    submitButton.addEventListener('click', processCreditCardForm);
+  }
 }
 
 /**

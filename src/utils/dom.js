@@ -8,6 +8,7 @@
  * @param {string} title - Popup title
  * @param {string} content - Popup content (HTML)
  * @param {Object} options - Popup options
+ * @returns {HTMLElement} The popup element for direct event listener attachment
  */
 export function showPopup(title, content, options = {}) {
   const {
@@ -41,11 +42,17 @@ export function showPopup(title, content, options = {}) {
     <div style="padding: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
         <h3 style="margin: 0;">${title}</h3>
-        <button onclick="window.hidePluginPopup()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        <button data-action="close-popup" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
       </div>
       <div>${content}</div>
     </div>
   `;
+
+  // Add event listener to close button
+  const closeButton = popup.querySelector('[data-action="close-popup"]');
+  if (closeButton) {
+    closeButton.addEventListener('click', hidePopup);
+  }
 
   // Create overlay
   const overlay = document.createElement('div');
@@ -59,10 +66,12 @@ export function showPopup(title, content, options = {}) {
     background: rgba(0,0,0,0.5);
     z-index: 9999;
   `;
-  overlay.onclick = hidePopup;
+  overlay.addEventListener('click', hidePopup);
 
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
+
+  return popup;
 }
 
 /**

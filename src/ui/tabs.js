@@ -56,11 +56,11 @@ export function setTab(content, tabId) {
 /**
  * Create a button element
  * @param {string} text - Button text
- * @param {Function|string} onClick - Click handler or onclick string
+ * @param {string} dataAction - Data attribute value for event delegation
  * @param {Object} options - Button options
  * @returns {string} Button HTML
  */
-export function createButton(text, onClick, options = {}) {
+export function createButton(text, dataAction, options = {}) {
   const {
     style = 'primary',
     size = 'medium',
@@ -83,11 +83,7 @@ export function createButton(text, onClick, options = {}) {
   const baseStyle = 'border-radius: 4px; cursor: pointer; font-weight: 500;';
   const buttonStyle = `${baseStyle} ${styles[style] || styles.primary} ${sizes[size] || sizes.medium}`;
 
-  const onClickAttr = typeof onClick === 'string'
-    ? onClick
-    : `onclick="${onClick.toString()}(); return false;"`;
-
-  return `<button style="${buttonStyle}" class="${className}" ${onClickAttr}>${text}</button>`;
+  return `<button style="${buttonStyle}" class="${className}" data-action="${dataAction}">${text}</button>`;
 }
 
 /**

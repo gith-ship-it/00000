@@ -166,12 +166,24 @@ function displayAccountInfo(accountData) {
         <h4 style="margin: 0 0 10px 0;">Payment Method</h4>
         <p style="margin: 5px 0;">
           <strong>Card:</strong> ${accountData.funding_source_details.display_string || 'No card on file'}
-          &nbsp;[<a href="#" onclick="window.showAddCreditCardForm(); return false;">add</a>]
+          &nbsp;[<a href="#" data-action="add-credit-card">add</a>]
         </p>
       </div>
     `;
 
     Tabs.setTab(cardHTML, 'dblock1cc');
+
+    // Add event listener to the add credit card link (scoped to container)
+    const container = document.getElementById('dblock1cc');
+    if (container) {
+      const addCardLink = container.querySelector('[data-action="add-credit-card"]');
+      if (addCardLink) {
+        addCardLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          CreditCard.showAddCreditCardForm();
+        });
+      }
+    }
   }
 }
 
