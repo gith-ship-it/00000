@@ -156,29 +156,37 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
  */
 export async function getAdAccountDetails(accountId, accessToken) {
   try {
-    // Try to get basic account details first
-    let data = await graphAPIRequest(`act_${accountId}`, {
-      params: {
-        fields: BASIC_AD_ACCOUNT_FIELDS.join(',')
-      },
-      accessToken
-    });
-
-    // Try to get additional fields if permissions allow
-    // These fields require ads_management or business_management permissions
-    try {
-      const additionalData = await graphAPIRequest(`act_${accountId}`, {
+    // Execute both API calls in parallel using Promise.allSettled
+    // This improves performance while avoiding the problematic batch API
+    const [basicResult, sensitiveResult] = await Promise.allSettled([
+      graphAPIRequest(`act_${accountId}`, {
+        params: {
+          fields: BASIC_AD_ACCOUNT_FIELDS.join(',')
+        },
+        accessToken
+      }),
+      graphAPIRequest(`act_${accountId}`, {
         params: {
           fields: SENSITIVE_AD_ACCOUNT_FIELDS.join(',')
         },
         accessToken
-      });
+      })
+    ]);
 
-      // Merge additional fields if successful
-      data = { ...data, ...additionalData };
-    } catch (permissionError) {
-      // Log warning but don't fail - these fields are optional
-      console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', permissionError.message);
+    // Basic fields are required - throw error if they fail
+    if (basicResult.status === 'rejected') {
+      throw basicResult.reason;
+    }
+
+    let data = basicResult.value;
+
+    // Sensitive fields are optional - merge if successful, warn if not
+    if (sensitiveResult.status === 'fulfilled') {
+      data = { ...data, ...sensitiveResult.value };
+    } else {
+      // Log warning but don't fail - these fields require special permissions
+      const errorMsg = sensitiveResult.reason?.message || 'Permission denied';
+      console.warn('Could not fetch sensitive account fields (this is normal if token lacks permissions):', errorMsg);
     }
 
     return {
