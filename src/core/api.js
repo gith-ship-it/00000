@@ -35,8 +35,8 @@ export async function graphAPIRequest(endpoint, options = {}) {
   const token = accessToken;
 
   const queryParams = new URLSearchParams({
-    access_token: token,
-    ...params
+    ...params,
+    access_token: token
   });
 
   const url = `${FB_GRAPH_API_BASE}/${endpoint}?${queryParams}`;
