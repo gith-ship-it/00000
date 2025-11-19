@@ -170,6 +170,20 @@ export async function getAdAccountDetails(accountId, accessToken) {
       accessToken
     });
 
+    // Check if any sensitive fields are missing from the response
+    // Facebook API omits fields when the token lacks permissions, rather than failing
+    const missingSensitiveFields = SENSITIVE_AD_ACCOUNT_FIELDS.filter(
+      field => !(field in data)
+    );
+
+    if (missingSensitiveFields.length > 0) {
+      console.warn(
+        'Could not fetch one or more sensitive account fields. ' +
+        'This is expected if the access token lacks permissions. ' +
+        `Missing fields: ${missingSensitiveFields.join(', ')}`
+      );
+    }
+
     return {
       success: true,
       data
