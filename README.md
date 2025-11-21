@@ -1,6 +1,6 @@
 # Facebook Ads Manager Plugin
 
-A modular, well-structured plugin for managing Facebook Ads Manager operations including ad accounts, pages, business managers, and payment methods.
+A modular, well-structured plugin for managing Facebook Ads Manager operations including ad accounts, pages, business managers, and payment methods. This project is designed for developers and advanced users to automate and streamline Facebook Ads tasks.
 
 ## Version
 
@@ -9,266 +9,167 @@ A modular, well-structured plugin for managing Facebook Ads Manager operations i
 ## Features
 
 ### Core Functionality
-- ✅ **Authentication & Token Management** - Automatic Facebook access token extraction
-- ✅ **Ad Account Management** - Create, delete, appeal, and manage ad accounts
-- ✅ **Credit Card Management** - Add and manage payment methods
-- ✅ **Fanpage Management** - Appeal, delete, and unhide Facebook pages
-- ✅ **Business Manager** - Manage Business Manager accounts and permissions
-- ✅ **Settings** - Update currency and timezone settings
+- ✅ **Authentication & Token Management** - Automatic extraction of Facebook access tokens from the user's session.
+- ✅ **Ad Account Management** - Functions to appeal restrictions, delete accounts, and manage user access.
+- ✅ **Credit Card Management** - Add new payment methods directly to ad accounts.
+- ✅ **Fanpage Management** - Appeal page restrictions, delete pages, and manage visibility.
+- ✅ **Business Manager** - Create Business Managers and manage ad account/user associations.
+- ✅ **Settings** - Update ad account currency and timezone settings.
 
 ### UI Components
-- Modern popup interface
-- Tab-based content organization
-- Responsive forms and buttons
-- Keyboard shortcuts (ESC to close, Ctrl+Shift+F to toggle)
+- **Modern Popup Interface**: Clean, tabbed interface for easy interaction.
+- **Responsive Forms**: Dynamic forms for adding credit cards and editing settings.
+- **Keyboard Shortcuts**: Quick access with `Ctrl+Shift+F` (Toggle) and `ESC` (Close).
 
 ## Project Structure
+
+The project follows a modular architecture to separate concerns and improve maintainability:
 
 ```
 fbacc/
 ├── src/
-│   ├── core/                 # Core functionality
-│   │   ├── config.js        # Configuration and constants
-│   │   ├── auth.js          # Authentication and token management
-│   │   └── api.js           # API request handling
-│   ├── modules/             # Feature modules
-│   │   ├── adAccount.js     # Ad account operations
-│   │   ├── creditCard.js    # Payment method management
-│   │   ├── fanpage.js       # Page management
-│   │   ├── businessManager.js # Business Manager operations
-│   │   └── settings.js      # Account settings
-│   ├── ui/                  # UI components
-│   │   ├── popup.js         # Popup window management
-│   │   └── tabs.js          # Tab components
-│   ├── utils/               # Utility functions
-│   │   ├── helpers.js       # General helper functions
-│   │   ├── http.js          # HTTP request utilities
-│   │   └── dom.js           # DOM manipulation utilities
-│   └── main.js              # Main entry point
-├── extension/               # Browser extension files
-│   ├── manifest.json        # Extension manifest (Manifest V3)
-│   ├── popup.html          # Extension popup interface
-│   ├── popup.js            # Popup logic
-│   ├── icons/              # Extension icons
-│   └── *.min.js            # Built plugin (copied during build)
-├── dist/                    # Built/bundled files (generated)
-├── scripts/                 # Build and utility scripts
-├── package.json
-├── rollup.config.js         # Build configuration
-├── README.md
-└── EXTENSION_INSTALL.md     # Extension installation guide
+│   ├── core/                 # Core infrastructure
+│   │   ├── config.js        # Global configuration (API versions, paths, constants)
+│   │   ├── auth.js          # Authentication logic (Token extraction, validation)
+│   │   └── api.js           # Centralized API handling (Graph API & GraphQL wrappers)
+│   ├── modules/             # Feature-specific business logic
+│   │   ├── adAccount.js     # Ad Account operations (Appeal, Delete, Get Details)
+│   │   ├── creditCard.js    # Payment method operations
+│   │   ├── fanpage.js       # Fanpage operations (Appeal, Delete, Unhide)
+│   │   ├── businessManager.js # Business Manager creation and management
+│   │   └── settings.js      # Account settings (Currency, Timezone)
+│   ├── ui/                  # User Interface components
+│   │   ├── popup.js         # Popup window lifecycle and layout
+│   │   └── tabs.js          # Tab system and UI helpers (Buttons, Forms)
+│   ├── utils/               # Shared utility functions
+│   │   ├── helpers.js       # General utilities (Cookies, URL params, Clipboard)
+│   │   ├── http.js          # Low-level HTTP request wrappers
+│   │   └── dom.js           # Safe DOM manipulation helpers
+│   └── main.js              # Application entry point and state management
+├── extension/               # Browser extension specific files
+│   ├── manifest.json        # Chrome Extension Manifest V3
+│   ├── popup.html           # Extension popup HTML
+│   ├── popup.js             # Extension popup logic
+│   ├── loader.js            # Content script loader
+│   └── icons/               # Assets
+├── dist/                    # Compiled build artifacts
+├── scripts/                 # Build automation scripts
+├── package.json             # Project dependencies and scripts
+├── rollup.config.js         # Rollup bundler configuration
+└── README.md                # Project documentation
 ```
 
-## Installation
+## Installation & Setup
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
+- **Node.js** (v14 or higher)
+- **npm** or **yarn**
 
-### Setup
+### Setup Steps
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd fbacc
-```
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd fbacc
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Development
+## Development Workflow
 
 ### Build Commands
 
-```bash
-# Development build with source maps
-npm run build:dev
+- **Build for Browser Extension (Recommended):**
+  ```bash
+  npm run build:extension
+  ```
+  This compiles the code in production mode and copies necessary files to the `extension/` directory, ready for loading into a browser.
 
-# Production build (minified)
-npm run build:prod
+- **Development Build:**
+  ```bash
+  npm run build:dev
+  ```
+  Creates a non-minified build with source maps in `dist/`, useful for debugging.
 
-# Build for browser extension (recommended)
-npm run build:extension
+- **Watch Mode:**
+  ```bash
+  npm run watch
+  ```
+  Automatically rebuilds the project when source files change.
 
-# Watch mode (auto-rebuild on changes)
-npm run watch
+- **Code Quality:**
+  ```bash
+  npm run lint    # Run ESLint
+  npm run format  # Format code with Prettier
+  ```
 
-# Clean build directory
-npm run clean
+## Usage Guide
 
-# Clean all (including extension files)
-npm run clean:all
-```
+### As a Browser Extension
 
-### Code Quality
+1. Run `npm run build:extension` to generate the extension files.
+2. Open your browser's extension management page:
+   - **Chrome/Edge/Brave**: `chrome://extensions/`
+   - **Firefox**: `about:debugging`
+3. Enable **Developer Mode**.
+4. Click **Load unpacked** (or "Load Temporary Add-on" in Firefox).
+5. Select the `extension` folder in this project.
 
-```bash
-# Run ESLint
-npm run lint
-
-# Format code with Prettier
-npm run format
-```
-
-## Build Output
-
-The build process generates:
-- `dist/fbacc-plugin.js` - Development build with source maps
-- `dist/fbacc-plugin.min.js` - Production build (minified)
-
-## Usage
-
-### As a Browser Extension (Recommended)
-
-**完整的瀏覽器擴充功能現已可用！**
-
-1. Build the extension:
-```bash
-npm run build:extension
-```
-
-2. Load in your browser:
-   - **Chrome/Edge/Brave**: Go to `chrome://extensions/`, enable Developer Mode, click "Load unpacked", select the `extension` folder
-   - **Firefox**: Go to `about:debugging`, click "Load Temporary Add-on", select `extension/manifest.json`
-
-**📖 詳細安裝指南**: 請參考 [EXTENSION_INSTALL.md](EXTENSION_INSTALL.md)
-
-This provides a complete browser extension with:
-- ✅ Popup interface for easy access
-- ✅ Automatic script injection on Facebook pages
-- ✅ Keyboard shortcuts (Ctrl+Shift+F)
-- ✅ Proper permissions and security
-- ✅ Beautiful gradient icons
-
-### As a Userscript
-
-1. Build the plugin
-2. Copy the contents of `dist/fbacc-plugin.min.js`
-3. Create a new userscript in your userscript manager (Tampermonkey, Greasemonkey, etc.)
-4. Paste the code
+**Usage:**
+- Navigate to Facebook Ads Manager (`adsmanager/manage/campaigns`).
+- Click the extension icon or use `Ctrl+Shift+F` to open the plugin popup.
+- Use the tabs to manage accounts, pages, and settings.
 
 ### Programmatic Usage
 
+The plugin exposes a global API `window.FBACCPlugin` for advanced usage or integration with other tools.
+
 ```javascript
-import { PluginState } from './src/main.js';
-import * as AdAccount from './src/modules/adAccount.js';
-import * as Auth from './src/core/auth.js';
+// Example: Accessing the API via browser console
+const plugin = window.FBACCPlugin;
 
-// Get access token
-const tokenInfo = Auth.getAccessToken();
+// Get current state
+console.log(plugin.getState());
 
-// Appeal an ad account
-const result = await AdAccount.appealAdAccount('123456789', tokenInfo.token);
+// Appeal the current ad account programmatically
+const token = plugin.getState().accessToken;
+const accountId = plugin.getState().accountId;
+
+plugin.AdAccount.appealAdAccount(accountId, token)
+  .then(result => console.log(result));
 ```
 
 ## API Documentation
 
-### Core Modules
+The codebase is fully documented with JSDoc. Below is a high-level overview of key modules.
 
-#### Authentication (`src/core/auth.js`)
-- `getAccessToken()` - Extract Facebook access token
-- `checkAuth()` - Check authentication status
-- `validateToken(token)` - Validate token format
+### Core Modules (`src/core/`)
+- **Auth**: `getAccessToken()`, `checkAuth()`, `validateToken()`
+- **API**: `graphAPIRequest()`, `graphQLRequest()` - Handles authentication and error normalization.
 
-#### API (`src/core/api.js`)
-- `graphAPIRequest(endpoint, options)` - Make Graph API requests
-- `graphQLRequest(docId, variables, friendlyName)` - Make GraphQL requests
-- `batchGraphAPIRequests(requests)` - Batch multiple requests
-
-### Feature Modules
-
-#### Ad Account (`src/modules/adAccount.js`)
-- `appealAdAccount(accountId, accessToken)` - Appeal ad account
-- `deleteAdAccount(adAccountId, accessToken)` - Delete ad account
-- `getAdAccountDetails(accountId, accessToken)` - Get account details
-
-#### Credit Card (`src/modules/creditCard.js`)
-- `addCreditCardToAccount(...)` - Add payment method
-- `showAddCreditCardForm()` - Show add card form
-
-#### Fanpage (`src/modules/fanpage.js`)
-- `appealFanpage(pageId, accessToken)` - Appeal page
-- `deleteFanpage(pageId, accessToken)` - Delete page
-- `unhideFanpage(pageId, accessToken)` - Unhide page
-
-#### Business Manager (`src/modules/businessManager.js`)
-- `addBusinessManager(bmName, accessToken)` - Create BM
-- `addUserToBusinessManager(...)` - Add user to BM
-- `addAdAccountToBusinessManager(...)` - Add ad account to BM
-
-#### Settings (`src/modules/settings.js`)
-- `updateAccountCurrency(accountId, currency, accessToken)` - Update currency
-- `updateAccountTimezone(accountId, timezone, accessToken)` - Update timezone
-
-## Configuration
-
-Edit `src/core/config.js` to modify:
-- Plugin version
-- Valid activation paths
-- Currency symbols
-- Other constants
-
-## Keyboard Shortcuts
-
-- `ESC` - Close popup
-- `Ctrl/Cmd + Shift + F` - Toggle popup visibility
-
-## Browser Compatibility
-
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-
-## Security Notes
-
-⚠️ This plugin handles sensitive data including:
-- Facebook access tokens
-- Payment information
-- Account credentials
-
-**Important:**
-- Never commit access tokens to version control
-- Use HTTPS for all API requests
-- Validate all user inputs
-- Follow Facebook's Platform Policies
+### Feature Modules (`src/modules/`)
+- **AdAccount**: `appealAdAccount()`, `deleteAdAccount()`, `getAdAccountDetails()`
+- **CreditCard**: `addCreditCardToAccount()`, `showAddCreditCardForm()`
+- **Fanpage**: `appealFanpage()`, `deleteFanpage()`, `unhideFanpage()`
+- **BusinessManager**: `addBusinessManager()`, `addUserToBusinessManager()`
+- **Settings**: `updateAccountCurrency()`, `updateAccountTimezone()`
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Fork** the repository.
+2. Create a **feature branch** (`git checkout -b feature/new-feature`).
+3. **Commit** your changes with clear messages.
+4. **Push** to your branch and open a **Pull Request**.
 
-## Code Style
-
-- Use ES6+ modules
-- Follow JSDoc conventions for documentation
-- Use meaningful variable and function names
-- Keep functions small and focused
-- Write self-documenting code
+Please ensure all code is documented using JSDoc and passes linting (`npm run lint`).
 
 ## License
 
-MIT License - See LICENSE file for details
-
-## Changelog
-
-### Version 6.4.0
-- Initial modular restructure
-- Separated code into logical modules
-- Added build system with Rollup
-- Improved documentation
-- Added development tools (ESLint, Prettier)
-
-## Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Contact: [your-email@example.com]
+MIT License - See LICENSE file for details.
 
 ## Disclaimer
 
-This plugin is for educational and development purposes. Users are responsible for complying with Facebook's Terms of Service and Platform Policies when using this plugin.
+This tool is for educational and development purposes only. Users are responsible for ensuring compliance with Facebook's Terms of Service and Platform Policies. Use at your own risk.
