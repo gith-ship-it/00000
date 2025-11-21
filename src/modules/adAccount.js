@@ -161,33 +161,32 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken, co
  * @returns {Promise<Object>} Account details
  */
 export async function getAdAccountDetails(accountId, accessToken) {
-  try {
-    // Combine all fields into a single request as in the original implementation
-    // The API v18.0 works better with all fields requested together
-    const allFields = [
-      ...BASIC_AD_ACCOUNT_FIELDS,
-      ...SENSITIVE_AD_ACCOUNT_FIELDS
-    ];
+  let data = {};
 
-    const data = await graphAPIRequest(`act_${accountId}`, {
+  try {
+    // First, fetch basic fields which should always work with a valid token
+    const basicData = await graphAPIRequest(`act_${accountId}`, {
       params: {
-        fields: allFields.join(',')
+        fields: BASIC_AD_ACCOUNT_FIELDS.join(',')
       },
       accessToken
     });
 
-    // Check if any sensitive fields are missing from the response
-    // Facebook API omits fields when the token lacks permissions, rather than failing
-    const missingSensitiveFields = SENSITIVE_AD_ACCOUNT_FIELDS.filter(
-      field => !(field in data)
-    );
+    data = { ...basicData };
 
-    if (missingSensitiveFields.length > 0) {
-      console.warn(
-        'Could not fetch one or more sensitive account fields. ' +
-        'This is expected if the access token lacks permissions. ' +
-        `Missing fields: ${missingSensitiveFields.join(', ')}`
-      );
+    // Try to fetch sensitive fields separately to avoid failing the entire request
+    try {
+      const sensitiveData = await graphAPIRequest(`act_${accountId}`, {
+        params: {
+          fields: SENSITIVE_AD_ACCOUNT_FIELDS.join(',')
+        },
+        accessToken
+      });
+
+      data = { ...data, ...sensitiveData };
+    } catch (sensitiveError) {
+      console.warn('Could not fetch sensitive account fields (permissions issue?):', sensitiveError.message);
+      // We continue with basic data
     }
 
     return {
