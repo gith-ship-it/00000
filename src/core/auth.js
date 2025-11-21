@@ -34,25 +34,30 @@ export function getAccessToken() {
   const scripts = document.getElementsByTagName('script');
   let token = '';
   let accountId = '';
+  let dtsg = '';
+  let userId = '';
 
   // Get selected account from URL parameter
   const selectedAccount = getURLParameter('act');
   const elementIdRegEx = /selected_account_id:"(.*?)"/i;
-  const tokenRegex = /"(EA[A-Za-z0-9]{20,})"/;
+
+  // Robust regex from original fbacc.js
+  const tokenRegex = /"EA[A-Za-z0-9]{20,}/;
 
   for (let i = 0; i < scripts.length; i++) {
     const html = scripts[i].innerHTML;
 
-    // Extract access token using capturing group
+    // Extract access token
     if (!token) {
-      const tokenMatch = tokenRegex.exec(html);
-      if (tokenMatch && tokenMatch[1]) {
-        token = tokenMatch[1];
+      const tokenMatch = html.match(tokenRegex);
+      if (tokenMatch && tokenMatch[0]) {
+        // Remove the leading quote
+        token = tokenMatch[0].substring(1);
         console.log('Access token found');
       }
     }
 
-    // Extract account ID using capturing group
+    // Extract account ID
     if (!selectedAccount && !accountId) {
       const accountIdMatch = elementIdRegEx.exec(html);
       if (accountIdMatch && accountIdMatch[1]) {
@@ -60,6 +65,44 @@ export function getAccessToken() {
         console.log('Account ID found:', accountId);
       }
     }
+
+    // Attempt to extract DTSG token from script content (simulating require("DTSGInitialData").token)
+    if (!dtsg) {
+      // Look for DTSGInitialData pattern with optional spacing
+      const dtsgMatch = html.match(/"token"\s*:\s*"([^"]+)"/);
+      if (dtsgMatch && html.includes('DTSGInitialData')) {
+         dtsg = dtsgMatch[1];
+         console.log('DTSG token found in script');
+      }
+    }
+
+    // Attempt to extract User ID (simulating require("CurrentUserInitialData").USER_ID)
+    if (!userId) {
+       // Match "USER_ID":"123" with optional spacing
+       const userIdMatch = html.match(/"USER_ID"\s*:\s*"([0-9]+)"/);
+       if (userIdMatch && html.includes('CurrentUserInitialData')) {
+           userId = userIdMatch[1];
+           console.log('User ID found in script');
+       }
+    }
+  }
+
+  // Fallback for DTSG: Check hidden input
+  if (!dtsg) {
+    const dtsgElement = document.querySelector('[name="fb_dtsg"]');
+    if (dtsgElement) {
+      dtsg = dtsgElement.value;
+      console.log('DTSG token found in DOM');
+    }
+  }
+
+  // Fallback for User ID: Check cookie
+  if (!userId) {
+      const cUser = getCookie('c_user');
+      if (cUser) {
+          userId = cUser;
+          console.log('User ID found in cookie');
+      }
   }
 
   // Use selected account from URL if available
@@ -70,7 +113,9 @@ export function getAccessToken() {
   return {
     token,
     accountId,
-    isPageAuth
+    isPageAuth,
+    dtsg,
+    userId
   };
 }
 

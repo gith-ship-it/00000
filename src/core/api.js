@@ -92,19 +92,27 @@ export async function graphQLRequest(
   }
 
   const token = accessToken;
+  const { dtsg, userId } = context;
 
   const urlencoded = new URLSearchParams();
+  // Note: decompressed_fbacc.js includes access_token in some cases, but relies heavily on dtsg/av
   urlencoded.append('access_token', token);
 
-  // Add any extra parameters first (e.g., paymentAccountID)
-  for (const [key, value] of Object.entries(extraParams)) {
-    urlencoded.append(key, value);
+  if (dtsg) {
+    urlencoded.append('fb_dtsg', dtsg);
   }
 
+  if (userId) {
+    urlencoded.append('av', userId);
+    urlencoded.append('__user', userId);
+  }
+
+  // Add standard params matching decompressed_fbacc.js
+  urlencoded.append('fb_api_caller_class', 'RelayModern');
+  urlencoded.append('fb_api_req_friendly_name', friendlyName);
   urlencoded.append('doc_id', docId);
   urlencoded.append('variables', JSON.stringify(variables));
-  urlencoded.append('fb_api_req_friendly_name', friendlyName);
-  urlencoded.append('fb_api_caller_class', 'RelayModern');
+  urlencoded.append('server_timestamps', 'true');
 
   const response = await fetch(FB_GRAPHQL_API, {
     method: 'POST',

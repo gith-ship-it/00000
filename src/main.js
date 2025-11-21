@@ -35,7 +35,9 @@ const PluginState = {
   initialized: false,
   accessToken: null,
   accountId: null,
-  isPageAuth: false
+  isPageAuth: false,
+  dtsg: null,
+  userId: null
 };
 
 /**
@@ -64,11 +66,13 @@ function initialize() {
     return;
   }
 
-  // Get access token
+  // Get access token and other credentials
   const tokenInfo = Auth.getAccessToken();
   PluginState.accessToken = tokenInfo.token;
   PluginState.accountId = tokenInfo.accountId;
   PluginState.isPageAuth = tokenInfo.isPageAuth;
+  PluginState.dtsg = tokenInfo.dtsg;
+  PluginState.userId = tokenInfo.userId;
 
   if (!PluginState.accessToken) {
     console.error('Failed to get access token');
@@ -125,6 +129,10 @@ async function loadInitialData() {
 
     // Load account information if available
     if (PluginState.accountId) {
+      // Pass necessary context to API functions if needed,
+      // but modules should receive what they need.
+      // Since we updated API to take params, we rely on modules passing them.
+      // For simple graph API calls, accessToken is enough.
       const accountDetails = await AdAccount.getAdAccountDetails(
         PluginState.accountId,
         PluginState.accessToken
@@ -213,7 +221,8 @@ function displayAccountInfo(accountData) {
     addLink.textContent = 'add';
     addLink.addEventListener('click', e => {
       e.preventDefault();
-      CreditCard.showAddCreditCardForm();
+      // Pass context needed for mutations
+      CreditCard.showAddCreditCardForm(PluginState);
     });
 
     cardP.append(cardStrong, cardText, ' [', addLink, ']');
