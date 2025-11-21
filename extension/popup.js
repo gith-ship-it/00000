@@ -1,7 +1,5 @@
 /**
  * Popup script for Facebook Ads Manager Plugin
- * This script runs within the context of the extension's popup window.
- * It handles user interactions in the popup and communicates with the active tab.
  */
 
 document.addEventListener('DOMContentLoaded', async function() {

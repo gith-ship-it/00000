@@ -5,17 +5,11 @@
 
 import { graphAPIRequest, graphQLRequest } from '../core/api.js';
 import { CONFIG } from '../core/config.js';
-
 /**
- * Appeal/request review for Facebook page.
- * Submits a client mutation to appeal a page restriction.
- * @param {string} pageId - Page ID to appeal
+ * Appeal/request review for Facebook page
+ * @param {string} pageId - Page ID
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of the appeal
- * @property {boolean} success - Whether the operation was successful
- * @property {string} message - Result message
- * @property {Object} [data] - Response data from GraphQL
- * @property {Object} [error] - Error details if failed
  */
 export async function appealFanpage(pageId, accessToken) {
   try {
@@ -39,6 +33,7 @@ export async function appealFanpage(pageId, accessToken) {
       message: 'Page appeal submitted successfully',
       data: response
     };
+
   } catch (error) {
     console.error('Error appealing fanpage:', error);
     return {
@@ -50,15 +45,10 @@ export async function appealFanpage(pageId, accessToken) {
 }
 
 /**
- * Delete Facebook page.
- * Submits a client mutation to delete a page.
+ * Delete Facebook page
  * @param {string} pageId - Page ID to delete
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of deletion
- * @property {boolean} success - Whether the operation was successful
- * @property {string} message - Result message
- * @property {Object} [data] - Response data from GraphQL
- * @property {Object} [error] - Error details if failed
  */
 export async function deleteFanpage(pageId, accessToken) {
   try {
@@ -81,6 +71,7 @@ export async function deleteFanpage(pageId, accessToken) {
       message: 'Page deleted successfully',
       data: response
     };
+
   } catch (error) {
     console.error('Error deleting fanpage:', error);
     return {
@@ -92,15 +83,10 @@ export async function deleteFanpage(pageId, accessToken) {
 }
 
 /**
- * Unhide Facebook page.
- * Submits a client mutation to set a page's visibility to visible.
+ * Unhide Facebook page
  * @param {string} pageId - Page ID to unhide
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of unhide operation
- * @property {boolean} success - Whether the operation was successful
- * @property {string} message - Result message
- * @property {Object} [data] - Response data from GraphQL
- * @property {Object} [error] - Error details if failed
  */
 export async function unhideFanpage(pageId, accessToken) {
   try {
@@ -124,6 +110,7 @@ export async function unhideFanpage(pageId, accessToken) {
       message: 'Page unhidden successfully',
       data: response
     };
+
   } catch (error) {
     console.error('Error unhiding fanpage:', error);
     return {
@@ -135,15 +122,10 @@ export async function unhideFanpage(pageId, accessToken) {
 }
 
 /**
- * Get detailed information about a Facebook page.
- * Requests fields like id, name, category, fan count, and verification status.
+ * Get page details
  * @param {string} pageId - Page ID
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Page details
- * @property {boolean} success - Whether the operation was successful
- * @property {Object} [data] - Page data object
- * @property {string} [message] - Error message if failed
- * @property {Object} [error] - Error details if failed
  */
 export async function getPageDetails(pageId, accessToken) {
   try {
@@ -168,6 +150,7 @@ export async function getPageDetails(pageId, accessToken) {
       success: true,
       data
     };
+
   } catch (error) {
     console.error('Error getting page details:', error);
     return {

@@ -4,8 +4,7 @@
  */
 
 /**
- * Get cookie value by name.
- * Reads document.cookie and parses it to find the specified cookie.
+ * Get cookie value by name
  * @param {string} name - Cookie name
  * @returns {string|undefined} Cookie value or undefined if not found
  */
@@ -19,8 +18,7 @@ export function getCookie(name) {
 }
 
 /**
- * Get URL parameter value by name.
- * Parses the query string of the current window location.
+ * Get URL parameter value
  * @param {string} name - Parameter name
  * @returns {string|null} Parameter value or null if not found
  */
@@ -30,10 +28,9 @@ export function getURLParameter(name) {
 }
 
 /**
- * Copy text to clipboard using modern Clipboard API with fallback.
- * Tries navigator.clipboard first, then falls back to document.execCommand('copy').
+ * Copy text to clipboard using modern Clipboard API with fallback
  * @param {string} text - Text to copy
- * @returns {Promise<void>} Resolves when copy is successful, rejects on error
+ * @returns {Promise<void>}
  */
 export async function copyToClipboard(text) {
   // Try modern Clipboard API first
@@ -71,11 +68,10 @@ export async function copyToClipboard(text) {
 }
 
 /**
- * Shadow text for display (partially hide sensitive information).
- * Reveals the first few characters and masks the rest with asterisks.
+ * Shadow text for display (partially hide sensitive information)
  * @param {string} text - Text to shadow
- * @param {number} [visibleChars=4] - Number of characters to keep visible at the start
- * @returns {string} Shadowed text (e.g., "1234****")
+ * @param {number} visibleChars - Number of characters to keep visible
+ * @returns {string} Shadowed text
  */
 export function shadowText(text, visibleChars = 4) {
   if (!text || text.length <= visibleChars) return text;

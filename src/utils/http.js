@@ -4,11 +4,10 @@
  */
 
 /**
- * Make a GET request and parse JSON response using fetch API.
+ * Make a GET request and parse JSON response using fetch API
  * @param {string} url - URL to fetch
- * @param {string} [type='GET'] - Request HTTP method (e.g. 'GET', 'POST')
+ * @param {string} type - Request type (default: 'GET')
  * @returns {Promise<any>} Parsed JSON response
- * @throws {Error} If the HTTP response status is not ok (200-299)
  */
 export async function getJSON(url, type = 'GET') {
   const response = await fetch(url, { method: type });
@@ -19,12 +18,11 @@ export async function getJSON(url, type = 'GET') {
 }
 
 /**
- * Make a POST request with form data (x-www-form-urlencoded).
+ * Make a POST request with form data
  * @param {string} url - URL to post to
- * @param {URLSearchParams} data - Form data to send in body
- * @param {Object} [headers={}] - Additional request headers
+ * @param {URLSearchParams} data - Form data to send
+ * @param {Object} headers - Additional headers
  * @returns {Promise<any>} Response data
- * @throws {Error} If the HTTP response status is not ok
  */
 export async function postFormData(url, data, headers = {}) {
   const defaultHeaders = {
@@ -45,10 +43,9 @@ export async function postFormData(url, data, headers = {}) {
 }
 
 /**
- * Make a GraphQL request to Facebook API.
- * Wraps postFormData to send a standardized GraphQL request.
- * @param {string} query - GraphQL doc_id (document ID)
- * @param {Object} variables - Query variables object
+ * Make a GraphQL request to Facebook API
+ * @param {string} query - GraphQL query
+ * @param {Object} variables - Query variables
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<any>} Response data
  */
