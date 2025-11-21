@@ -7,6 +7,7 @@ import { graphQLRequest } from '../core/api.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
 import { CONFIG } from '../core/config.js';
 import { createFormField } from '../ui/tabs.js';
+
 /**
  * Add credit card to ad account
  * @param {string} adAccountId - Ad account ID
@@ -17,6 +18,7 @@ import { createFormField } from '../ui/tabs.js';
  * @param {string} ccCVC - Card CVC
  * @param {string} ccIso - Country ISO code
  * @param {string} accessToken - Facebook access token
+ * @param {Object} context - Plugin context (dtsg, userId)
  * @returns {Promise<Object>} Result of the operation
  */
 export async function addCreditCardToAccount(
@@ -27,7 +29,8 @@ export async function addCreditCardToAccount(
   ccMonth,
   ccCVC,
   ccIso,
-  accessToken
+  accessToken,
+  context = {}
 ) {
   try {
     const variables = {
@@ -49,12 +52,28 @@ export async function addCreditCardToAccount(
       }
     };
 
+    // We are passing paymentAccountID as context here if API logic supported it directly,
+    // but based on api.js refactor, we only extract dtsg and userId from context.
+    // If specific mutation needs extra query params, api.js should be updated or we assume
+    // graphQLRequest handles standard params.
+    // NOTE: Original code added `paymentAccountID` to extraParams.
+    // decompressed_fbacc.js uses `useBillingAddCreditCardMutation` but does NOT seem to add paymentAccountID
+    // to the top-level form data, only inside variables.
+    // The original src/modules/creditCard.js added { paymentAccountID: adAccountId } to extraParams.
+    // Since my api.js refactor REMOVED extraParams loop, this parameter would be lost.
+    // Let's check if it is really needed.
+    // In decompressed_fbacc.js:
+    // urlencoded.append("variables", '{"input":{"payment_account_id":"'+ adAccId +'"...}}');
+    // It does NOT append payment_account_id to the body outside variables.
+    // So the extraParams in original source might have been superfluous or for a different API version.
+    // I will proceed with just context.
+
     const result = await graphQLRequest(
       CONFIG.GRAPHQL_DOC_IDS.ADD_CREDIT_CARD,
       variables,
       'useFBAAddCreditCardMutation',
       accessToken,
-      { paymentAccountID: adAccountId }
+      context
     );
 
     return {
@@ -75,11 +94,15 @@ export async function addCreditCardToAccount(
 
 /**
  * Show add credit card form
+ * @param {Object} context - Plugin context (PluginState)
  */
-export function showAddCreditCardForm() {
+export function showAddCreditCardForm(context = {}) {
   // Create form container using DOM methods (XSS-safe)
   const formContainer = document.createElement('div');
   formContainer.id = 'add-cc-form';
+
+  // Store context on the form container for processing
+  formContainer.dataset.context = JSON.stringify(context);
 
   // Card number field
   formContainer.appendChild(createFormField('Card Number:', 'cc-number', { placeholder: '1234 5678 9012 3456' }));
@@ -118,7 +141,7 @@ export function showAddCreditCardForm() {
   addButton.setAttribute('data-action', 'submit');
   addButton.textContent = 'Add Card';
   addButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
-  addButton.addEventListener('click', processCreditCardForm);
+  addButton.addEventListener('click', () => processCreditCardForm(context));
 
   buttonContainer.append(cancelButton, addButton);
   formContainer.appendChild(buttonContainer);
@@ -128,13 +151,24 @@ export function showAddCreditCardForm() {
 
 /**
  * Process credit card form submission
+ * @param {Object} context - Plugin context
  */
-export async function processCreditCardForm() {
+export async function processCreditCardForm(context = {}) {
   const ccNumber = document.getElementById('cc-number')?.value;
   const ccMonth = document.getElementById('cc-month')?.value;
   const ccYear = document.getElementById('cc-year')?.value;
   const ccCVC = document.getElementById('cc-cvc')?.value;
   const ccCountry = document.getElementById('cc-country')?.value;
+
+  // Try to get context from form data if not provided
+  if (!context.accessToken) {
+      const form = document.getElementById('add-cc-form');
+      if (form && form.dataset.context) {
+          try {
+              context = JSON.parse(form.dataset.context);
+          } catch (e) { console.error('Failed to parse context', e); }
+      }
+  }
 
   // Validation
   if (!ccNumber || !ccMonth || !ccYear || !ccCVC || !ccCountry) {
@@ -164,10 +198,10 @@ export async function processCreditCardForm() {
     return;
   }
 
-  // Get account info from global state
-  const accountId = window.PluginState?.accountId || window.selectedacc;
-  const socialId = window.PluginState?.socialId || window.socid;
-  const accessToken = window.PluginState?.accessToken || window.privateToken;
+  // Get account info from context or global window state fallback (legacy)
+  const accountId = context.accountId || window.selectedacc;
+  const socialId = context.userId || window.socid;
+  const accessToken = context.accessToken || window.privateToken;
 
   if (!accountId || !socialId || !accessToken) {
     showError('Account information not available. Please reload the page.');
@@ -175,7 +209,8 @@ export async function processCreditCardForm() {
   }
 
   try {
-    hidePopup();
+    // We shouldn't hide popup immediately to allow error showing
+    // hidePopup();
 
     const result = await addCreditCardToAccount(
       accountId,
@@ -185,22 +220,27 @@ export async function processCreditCardForm() {
       ccMonth,
       ccCVC,
       ccCountry.toUpperCase(),
-      accessToken
+      accessToken,
+      context
     );
 
     if (result.success) {
+      hidePopup();
       alert('Credit card added successfully!');
 
       // Reload if mainreload is available
       if (window.mainreload) {
         window.mainreload();
+      } else {
+          // Maybe refresh the ad account details logic here if possible
+          location.reload();
       }
     } else {
-      alert(`Error adding credit card: ${result.message}`);
+      showError(`Error adding credit card: ${result.message}`);
     }
   } catch (error) {
     console.error('Error processing credit card form:', error);
-    alert(`Error: ${error.message}`);
+    showError(`Error: ${error.message}`);
   }
 }
 

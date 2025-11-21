@@ -31,14 +31,15 @@ const SENSITIVE_AD_ACCOUNT_FIELDS = [
  * Appeal/request review for ad account
  * @param {string} accountId - Ad account ID
  * @param {string} accessToken - Facebook access token
+ * @param {Object} context - Plugin context containing dtsg and userId
  * @returns {Promise<Object>} Result of the appeal
  */
-export async function appealAdAccount(accountId, accessToken) {
+export async function appealAdAccount(accountId, accessToken, context = {}) {
   try {
     const variables = {
       input: {
         client_mutation_id: '1',
-        actor_id: accountId,
+        actor_id: context.userId || accountId, // Use userId if available, fallback to accountId
         ad_account_id: accountId,
         ids_issue_ent_id: '1',
         appeal_comment: "I'm not sure which policy was violated.",
@@ -50,7 +51,8 @@ export async function appealAdAccount(accountId, accessToken) {
       CONFIG.GRAPHQL_DOC_IDS.AD_ACCOUNT_APPEAL,
       variables,
       'useAdAccountALRAppealMutation',
-      accessToken
+      accessToken,
+      context
     );
 
     return {
@@ -73,14 +75,15 @@ export async function appealAdAccount(accountId, accessToken) {
  * Delete ad account
  * @param {string} adAccountId - Ad account ID to delete
  * @param {string} accessToken - Facebook access token
+ * @param {Object} context - Plugin context containing dtsg and userId
  * @returns {Promise<Object>} Result of deletion
  */
-export async function deleteAdAccount(adAccountId, accessToken) {
+export async function deleteAdAccount(adAccountId, accessToken, context = {}) {
   try {
     const variables = {
       input: {
         ad_account_id: adAccountId,
-        actor_id: adAccountId,
+        actor_id: context.userId || adAccountId, // Use userId if available
         client_mutation_id: '1'
       }
     };
@@ -89,7 +92,8 @@ export async function deleteAdAccount(adAccountId, accessToken) {
       CONFIG.GRAPHQL_DOC_IDS.AD_ACCOUNT_DELETE,
       variables,
       'AdAccountDeleteMutation',
-      accessToken
+      accessToken,
+      context
     );
 
     return {
@@ -113,9 +117,10 @@ export async function deleteAdAccount(adAccountId, accessToken) {
  * @param {string} adAccountId - Ad account ID
  * @param {string} userId - User ID to remove
  * @param {string} accessToken - Facebook access token
+ * @param {Object} context - Plugin context
  * @returns {Promise<Object>} Result of removal
  */
-export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
+export async function removeAdAccountAccess(adAccountId, userId, accessToken, context = {}) {
   try {
     const variables = {
       input: {
@@ -129,7 +134,8 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
       CONFIG.GRAPHQL_DOC_IDS.AD_ACCOUNT_REMOVE_ACCESS,
       variables,
       'RemoveAdAccountAccessMutation',
-      accessToken
+      accessToken,
+      context
     );
 
     return {
