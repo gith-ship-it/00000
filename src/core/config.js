@@ -7,7 +7,7 @@ export const CONFIG = {
   VERSION: '6.4',
 
   // Facebook Graph API version
-  FB_API_VERSION: 'v18.0',
+  FB_API_VERSION: 'v19.0',
 
   // Valid paths for the plugin to activate
   VALID_PATHS: [
