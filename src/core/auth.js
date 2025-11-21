@@ -36,9 +36,9 @@ export function getAccessToken() {
   const selectedAccount = getURLParameter('act');
   const elementIdRegEx = /selected_account_id:"(.*?)"/i;
 
-  // Expanded regex to handle non-alphanumeric characters in token (e.g. _, -, .)
-  // Matches "EA..." followed by at least 20 valid token characters
-  const tokenRegex = /"EA[A-Za-z0-9._-]{20,}[^"]*/;
+  // Strict regex matching original fbacc.js to avoid matching non-token strings like "EARLY_WINNER..."
+  // Matches "EA" followed by at least 20 alphanumeric characters.
+  const tokenRegex = /"EA[A-Za-z0-9]{20,}/;
 
   for (let i = 0; i < scripts.length; i++) {
     const html = scripts[i].innerHTML;
@@ -47,11 +47,7 @@ export function getAccessToken() {
     const tokenMatch = html.match(tokenRegex);
     if (tokenMatch && tokenMatch[0]) {
       // Remove the leading quote
-      let candidate = tokenMatch[0].substring(1);
-      // Clean trailing quote if captured (regex shouldn't capture it due to exclusion, but safety first)
-      if (candidate.endsWith('"')) candidate = candidate.slice(0, -1);
-
-      token = candidate;
+      token = tokenMatch[0].substring(1);
       // console.log('Access token found (updating)');
     }
 
@@ -127,7 +123,7 @@ export function validateToken(token) {
   if (!token) return false;
 
   // Facebook tokens typically start with EA and are at least 20 characters
-  const tokenPattern = /^EA[A-Za-z0-9._-]{20,}$/;
+  const tokenPattern = /^EA[A-Za-z0-9]{20,}$/;
   return tokenPattern.test(token);
 }
 
