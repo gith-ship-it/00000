@@ -4,10 +4,13 @@
  */
 
 /**
- * Get popup coordinates centered on screen
- * @param {number} width - Popup width
- * @param {number} height - Popup height
- * @returns {Object} Coordinates {left, top}
+ * Get popup coordinates centered on screen.
+ * Calculates the top and left coordinates to center a popup of given dimensions.
+ * @param {number} [width=800] - Popup width in pixels
+ * @param {number} [height=600] - Popup height in pixels
+ * @returns {Object} Coordinates object
+ * @property {number} left - Left coordinate in pixels
+ * @property {number} top - Top coordinate in pixels
  */
 export function getPopupCoords(width = 800, height = 600) {
   const left = (window.screen.width - width) / 2;
@@ -17,7 +20,10 @@ export function getPopupCoords(width = 800, height = 600) {
 }
 
 /**
- * Initialize main plugin popup
+ * Initialize main plugin popup structure in the DOM.
+ * Creates the overlay, popup container, header, close button, and content areas.
+ * Does not show the popup immediately.
+ * @returns {void}
  */
 export function initPluginPopup() {
   // Remove existing popup if any
@@ -54,7 +60,8 @@ export function initPluginPopup() {
   // Create close button
   const closeButton = document.createElement('button');
   closeButton.setAttribute('data-action', 'close');
-  closeButton.style.cssText = 'background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;';
+  closeButton.style.cssText =
+    'background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px;';
   closeButton.textContent = '×';
   closeButton.addEventListener('click', mainclose);
 
@@ -83,7 +90,9 @@ export function initPluginPopup() {
 }
 
 /**
- * Show plugin popup
+ * Show plugin popup.
+ * Initializes the popup if it doesn't exist, then sets display to block.
+ * @returns {void}
  */
 export function showPluginPopup() {
   const popup = document.getElementById('fb-ads-plugin-popup');
@@ -96,7 +105,9 @@ export function showPluginPopup() {
 }
 
 /**
- * Hide plugin popup
+ * Hide plugin popup.
+ * Sets display to none.
+ * @returns {void}
  */
 export function hidePluginPopup() {
   const popup = document.getElementById('fb-ads-plugin-popup');
@@ -106,7 +117,9 @@ export function hidePluginPopup() {
 }
 
 /**
- * Toggle plugin popup visibility
+ * Toggle plugin popup visibility.
+ * Shows if hidden, hides if shown. Initializes if not present.
+ * @returns {void}
  */
 export function togglePluginPopup() {
   const popup = document.getElementById('fb-ads-plugin-popup');
@@ -124,7 +137,9 @@ export function togglePluginPopup() {
 }
 
 /**
- * Destroy plugin popup
+ * Destroy plugin popup.
+ * Removes the popup element from the DOM.
+ * @returns {void}
  */
 export function destroyPluginPopup() {
   const popup = document.getElementById('fb-ads-plugin-popup');
@@ -134,21 +149,24 @@ export function destroyPluginPopup() {
 }
 
 /**
- * Close main popup (alias for hide)
+ * Close main popup (alias for hidePluginPopup).
+ * @returns {void}
  */
 export function mainclose() {
   hidePluginPopup();
 }
 
 /**
- * Hide main popup (alias for hide)
+ * Hide main popup (alias for hidePluginPopup).
+ * @returns {void}
  */
 export function mainhide() {
   hidePluginPopup();
 }
 
 /**
- * Unhide main popup (alias for show)
+ * Unhide main popup (alias for showPluginPopup).
+ * @returns {void}
  */
 export function mainunhide() {
   showPluginPopup();

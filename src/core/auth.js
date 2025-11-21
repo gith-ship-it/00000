@@ -7,8 +7,9 @@ import { getCookie, getURLParameter } from '../utils/helpers.js';
 import { CONFIG } from './config.js';
 
 /**
- * Check if user is authenticated as page or personal profile
- * @returns {boolean} True if page auth, false if personal profile
+ * Check if user is authenticated as page or personal profile.
+ * It checks for the presence of the 'i_user' cookie.
+ * @returns {boolean} True if page auth (cookie exists), false if personal profile
  */
 export function checkAuth() {
   if (getCookie(CONFIG.COOKIES.USER_ID) !== undefined) {
@@ -18,8 +19,12 @@ export function checkAuth() {
 }
 
 /**
- * Get Facebook access token from page scripts
- * @returns {Object} Token information { token, accountId, isPageAuth, dtsg, userId }
+ * Get Facebook access token and account ID from page scripts.
+ * It scans script tags for token patterns and account ID patterns.
+ * @returns {Object} Token information object
+ * @property {string} token - The extracted access token (empty string if not found)
+ * @property {string} accountId - The extracted ad account ID (empty string if not found)
+ * @property {boolean} isPageAuth - Whether the user is authenticated as a page
  */
 export function getAccessToken() {
   const isPageAuth = checkAuth();
@@ -115,9 +120,10 @@ export function getAccessToken() {
 }
 
 /**
- * Validate access token
+ * Validate access token format.
+ * Checks if the token starts with 'EA' and is at least 20 characters long.
  * @param {string} token - Access token to validate
- * @returns {boolean} True if token is valid format
+ * @returns {boolean} True if token is valid format, false otherwise
  */
 export function validateToken(token) {
   if (!token) return false;
@@ -128,8 +134,10 @@ export function validateToken(token) {
 }
 
 /**
- * Prompt user to switch to personal profile if needed
- * @param {Function} callback - Callback to execute after switch
+ * Prompt user to switch to personal profile if they are authenticated as a page.
+ * Opens a forced account switch window if the user confirms.
+ * @param {Function} [callback] - Callback to execute if no switch is needed or after check
+ * @returns {boolean} True if no switch was needed (already personal profile), False if switch prompt was shown
  */
 export function promptAccountSwitch(callback) {
   const isPageAuth = checkAuth();
