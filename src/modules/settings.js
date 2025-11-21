@@ -8,15 +8,11 @@ import { CONFIG } from '../core/config.js';
 import { showPopup, hidePopup } from '../utils/dom.js';
 
 /**
- * Update ad account currency.
+ * Update ad account currency
  * @param {string} accountId - Ad account ID
- * @param {string} currency - Currency code (e.g., 'USD', 'EUR')
+ * @param {string} currency - Currency code (e.g., 'USD')
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of update
- * @property {boolean} success - Whether the operation was successful
- * @property {string} message - Result message
- * @property {Object} [data] - Response data from Graph API
- * @property {Object} [error] - Error details if failed
  */
 export async function updateAccountCurrency(accountId, currency, accessToken) {
   try {
@@ -33,6 +29,7 @@ export async function updateAccountCurrency(accountId, currency, accessToken) {
       message: `Currency updated to ${currency} successfully`,
       data
     };
+
   } catch (error) {
     console.error('Error updating currency:', error);
     return {
@@ -44,15 +41,11 @@ export async function updateAccountCurrency(accountId, currency, accessToken) {
 }
 
 /**
- * Update ad account timezone.
+ * Update ad account timezone
  * @param {string} accountId - Ad account ID
- * @param {string} timezoneId - Timezone ID (e.g., '1' for America/Los_Angeles, depends on FB API)
+ * @param {string} timezone - Timezone name (e.g., 'America/New_York')
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of update
- * @property {boolean} success - Whether the operation was successful
- * @property {string} message - Result message
- * @property {Object} [data] - Response data from Graph API
- * @property {Object} [error] - Error details if failed
  */
 export async function updateAccountTimezone(accountId, timezoneId, accessToken) {
   try {
@@ -66,9 +59,10 @@ export async function updateAccountTimezone(accountId, timezoneId, accessToken) 
 
     return {
       success: true,
-      message: 'Timezone updated successfully',
+      message: `Timezone updated successfully`,
       data
     };
+
   } catch (error) {
     console.error('Error updating timezone:', error);
     return {
@@ -80,8 +74,7 @@ export async function updateAccountTimezone(accountId, timezoneId, accessToken) 
 }
 
 /**
- * Show the "Edit Currency" form popup.
- * @returns {void}
+ * Show currency edit form
  */
 export function showEditCurrencyForm() {
   const currencies = Object.keys(CONFIG.CURRENCY_SYMBOLS);
@@ -120,15 +113,13 @@ export function showEditCurrencyForm() {
   const cancelButton = document.createElement('button');
   cancelButton.setAttribute('data-action', 'cancel');
   cancelButton.textContent = 'Cancel';
-  cancelButton.style.cssText =
-    'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
   cancelButton.addEventListener('click', hidePopup);
 
   const updateButton = document.createElement('button');
   updateButton.setAttribute('data-action', 'submit');
   updateButton.textContent = 'Update Currency';
-  updateButton.style.cssText =
-    'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  updateButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   updateButton.addEventListener('click', processEditCurrency);
 
   buttonContainer.append(cancelButton, updateButton);
@@ -140,8 +131,7 @@ export function showEditCurrencyForm() {
 }
 
 /**
- * Show the "Edit Timezone" form popup.
- * @returns {void}
+ * Show timezone edit form
  */
 export function showEditTimezoneForm() {
   const timezones = [
@@ -190,15 +180,13 @@ export function showEditTimezoneForm() {
   const cancelButton = document.createElement('button');
   cancelButton.setAttribute('data-action', 'cancel');
   cancelButton.textContent = 'Cancel';
-  cancelButton.style.cssText =
-    'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
   cancelButton.addEventListener('click', hidePopup);
 
   const updateButton = document.createElement('button');
   updateButton.setAttribute('data-action', 'submit');
   updateButton.textContent = 'Update Timezone';
-  updateButton.style.cssText =
-    'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  updateButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   updateButton.addEventListener('click', processEditTimezone);
 
   buttonContainer.append(cancelButton, updateButton);
@@ -210,10 +198,8 @@ export function showEditTimezoneForm() {
 }
 
 /**
- * Process currency edit form submission.
- * Retrieves selected currency and global state, then calls updateAccountCurrency.
- * Note: Requires PluginState to be available with accountId and accessToken.
- * @returns {Promise<void>}
+ * Process currency edit form submission
+ * Note: Requires PluginState to be available with accountId and accessToken
  */
 export async function processEditCurrency() {
   const currencySelect = document.getElementById('currency-select');
@@ -254,10 +240,8 @@ export async function processEditCurrency() {
 }
 
 /**
- * Process timezone edit form submission.
- * Retrieves selected timezone and global state, then calls updateAccountTimezone.
- * Note: Requires PluginState to be available with accountId and accessToken.
- * @returns {Promise<void>}
+ * Process timezone edit form submission
+ * Note: Requires PluginState to be available with accountId and accessToken
  */
 export async function processEditTimezone() {
   const timezoneSelect = document.getElementById('timezone-select');
@@ -298,9 +282,9 @@ export async function processEditTimezone() {
 }
 
 /**
- * Get currency symbol for a currency code.
+ * Get currency symbol for a currency code
  * @param {string} currencyCode - Currency code (e.g., 'USD')
- * @returns {string} Currency symbol or the code itself if not found
+ * @returns {string} Currency symbol
  */
 export function getCurrencySymbol(currencyCode) {
   return CONFIG.CURRENCY_SYMBOLS[currencyCode] || currencyCode;

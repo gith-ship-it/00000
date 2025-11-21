@@ -7,28 +7,26 @@ import { CONFIG } from './config.js';
 
 /**
  * Facebook Graph API base URL
- * @constant {string}
  */
 export const FB_GRAPH_API_BASE = `https://graph.facebook.com/${CONFIG.FB_API_VERSION}`;
 
 /**
  * Facebook GraphQL API URL
- * @constant {string}
  */
 export const FB_GRAPHQL_API = 'https://www.facebook.com/api/graphql/';
 
 /**
  * Make a Facebook Graph API request
  * @param {string} endpoint - API endpoint (e.g., 'me', 'act_123456/campaigns')
- * @param {Object} [options={}] - Request options
- * @param {string} [options.method='GET'] - HTTP method
- * @param {Object} [options.params={}] - Query parameters
- * @param {string} [options.accessToken=null] - Facebook access token (required)
- * @returns {Promise<Object>} API response JSON
- * @throws {Error} If access token is missing or API request fails
+ * @param {Object} options - Request options
+ * @returns {Promise<Object>} API response
  */
 export async function graphAPIRequest(endpoint, options = {}) {
-  const { method = 'GET', params = {}, accessToken = null } = options;
+  const {
+    method = 'GET',
+    params = {},
+    accessToken = null
+  } = options;
 
   if (!accessToken) {
     throw new Error('Access token is required. Please pass it explicitly.');
@@ -74,19 +72,12 @@ export async function graphAPIRequest(endpoint, options = {}) {
  * Make a Facebook GraphQL request
  * @param {string} docId - GraphQL document ID
  * @param {Object} variables - GraphQL variables
- * @param {string} friendlyName - API friendly name for identifying the request
- * @param {string} [accessToken=null] - Facebook access token (required)
- * @param {Object} [extraParams={}] - Optional additional parameters for the request body (e.g. paymentAccountID)
- * @returns {Promise<Object>} API response JSON
- * @throws {Error} If access token is missing, HTTP error occurs, or GraphQL returns errors
+ * @param {string} friendlyName - API friendly name
+ * @param {string} accessToken - Access token (optional)
+ * @param {Object} context - Context object containing dtsg and userId
+ * @returns {Promise<Object>} API response
  */
-export async function graphQLRequest(
-  docId,
-  variables,
-  friendlyName,
-  accessToken = null,
-  extraParams = {}
-) {
+export async function graphQLRequest(docId, variables, friendlyName, accessToken = null, context = {}) {
   if (!accessToken) {
     throw new Error('Access token is required. Please pass it explicitly.');
   }
@@ -136,14 +127,10 @@ export async function graphQLRequest(
 }
 
 /**
- * Batch multiple Graph API requests into a single HTTP call
- * @param {Array<Object>} requests - Array of request objects. Each object should have 'method', 'endpoint', and 'params'.
- * @param {string} [requests[].method='GET'] - HTTP method for the individual request
- * @param {string} requests[].endpoint - Relative API endpoint for the individual request
- * @param {Object} [requests[].params] - Query parameters for the individual request
- * @param {string} [accessToken=null] - Facebook access token (required)
- * @returns {Promise<Array<Object>>} Array of response objects, each containing { success: boolean, data|error: Object }
- * @throws {Error} If access token is missing or batch request itself fails
+ * Batch multiple Graph API requests
+ * @param {Array<Object>} requests - Array of request objects
+ * @param {string} accessToken - Access token (optional)
+ * @returns {Promise<Array>} Array of responses
  */
 export async function batchGraphAPIRequests(requests, accessToken = null) {
   if (!accessToken) {
@@ -187,13 +174,9 @@ export async function batchGraphAPIRequests(requests, accessToken = null) {
 }
 
 /**
- * Handle API errors and normalize them into a standard format
- * @param {Error} error - The error object caught from a try/catch block
+ * Handle API errors
+ * @param {Error} error - Error object
  * @returns {Object} Formatted error response
- * @property {boolean} success - Always false
- * @property {Object} error - Error details
- * @property {string} error.code - Standardized error code (e.g., 'INVALID_TOKEN', 'PERMISSION_DENIED', 'RATE_LIMIT', 'UNKNOWN_ERROR')
- * @property {string} error.message - Human-readable error message
  */
 export function handleAPIError(error) {
   console.error('API Error:', error);

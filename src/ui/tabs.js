@@ -4,11 +4,9 @@
  */
 
 /**
- * Append content to a tab.
- * Appends a DOM element or node to the specified tab container.
+ * Append content to a tab
  * @param {HTMLElement|Node} content - DOM element or node to append
  * @param {string} tabId - Tab element ID
- * @returns {void}
  *
  * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
  * Do not pass HTML strings. Use createElement() to build your content safely.
@@ -23,19 +21,15 @@ export function appendTab(content, tabId) {
   if (content instanceof Node) {
     element.appendChild(content);
   } else {
-    console.error(
-      'appendTab: content must be a DOM Node for security. HTML strings are not supported.'
-    );
+    console.error('appendTab: content must be a DOM Node for security. HTML strings are not supported.');
   }
 }
 
 /**
- * Append content to tab with optional callback.
- * Appends content and executes a callback function afterwards.
+ * Append content to tab with callback
  * @param {HTMLElement|Node} content - DOM element or node to append
  * @param {string} tabId - Tab element ID
- * @param {Function} [callback] - Callback function to execute after appending
- * @returns {void}
+ * @param {Function} callback - Callback after appending
  *
  * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
  */
@@ -47,10 +41,8 @@ export function appendTabPlus(content, tabId, callback) {
 }
 
 /**
- * Clear tab content.
- * Removes all child nodes from the specified tab element.
+ * Clear tab content
  * @param {string} tabId - Tab element ID
- * @returns {void}
  */
 export function clearTab(tabId) {
   const element = document.getElementById(tabId);
@@ -61,11 +53,9 @@ export function clearTab(tabId) {
 }
 
 /**
- * Set tab content (replace existing content).
- * Clears the tab and appends the new content.
- * @param {HTMLElement|Node} content - DOM element or node to set as content
+ * Set tab content (replace existing content)
+ * @param {HTMLElement|Node} content - DOM element or node to set
  * @param {string} tabId - Tab element ID
- * @returns {void}
  *
  * SECURITY: This function only accepts DOM elements/nodes to prevent XSS attacks.
  * Do not pass HTML strings. Use createElement() to build your content safely.
@@ -83,27 +73,25 @@ export function setTab(content, tabId) {
   if (content instanceof Node) {
     element.appendChild(content);
   } else {
-    console.error(
-      'setTab: content must be a DOM Node for security. HTML strings are not supported.'
-    );
+    console.error('setTab: content must be a DOM Node for security. HTML strings are not supported.');
   }
 }
 
 /**
- * Create a button element.
- * Helper function to create styled buttons with event handlers via data attributes.
+ * Create a button element
  * @param {string} text - Button text (will be escaped)
  * @param {string} dataAction - Data attribute value for event delegation
- * @param {Object} [options={}] - Button options
- * @param {string} [options.style='primary'] - Button style ('primary', 'secondary', 'danger', 'success')
- * @param {string} [options.size='medium'] - Button size ('small', 'medium', 'large')
- * @param {string} [options.className=''] - Additional CSS classes
- * @returns {HTMLButtonElement} The created button DOM element
+ * @param {Object} options - Button options
+ * @returns {HTMLButtonElement} Button DOM element
  *
  * SECURITY: Returns a DOM element with safe textContent. Use data-action for event delegation.
  */
 export function createButton(text, dataAction, options = {}) {
-  const { style = 'primary', size = 'medium', className = '' } = options;
+  const {
+    style = 'primary',
+    size = 'medium',
+    className = ''
+  } = options;
 
   const styles = {
     primary: 'background: #1877f2; color: white; border: none;',
@@ -136,19 +124,19 @@ export function createButton(text, dataAction, options = {}) {
 }
 
 /**
- * Create a form field.
- * Helper function to create a labeled input field wrapped in a container.
- * @param {string} label - Field label text (will be escaped)
- * @param {string} id - Input element ID
- * @param {Object} [options={}] - Field options
- * @param {string} [options.type='text'] - Input type (e.g. 'text', 'number', 'password')
- * @param {string} [options.placeholder=''] - Input placeholder text
- * @param {boolean} [options.required=false] - Whether the field is required
- * @param {string} [options.value=''] - Initial value
- * @returns {HTMLDivElement} Form field container DOM element
+ * Create a form field
+ * @param {string} label - Field label (will be escaped)
+ * @param {string} id - Input ID (will be escaped)
+ * @param {Object} options - Field options
+ * @returns {HTMLDivElement} Form field DOM element
  */
 export function createFormField(label, id, options = {}) {
-  const { type = 'text', placeholder = '', required = false, value = '' } = options;
+  const {
+    type = 'text',
+    placeholder = '',
+    required = false,
+    value = ''
+  } = options;
 
   // Create container div
   const container = document.createElement('div');
@@ -177,8 +165,7 @@ export function createFormField(label, id, options = {}) {
   if (required) {
     input.required = true;
   }
-  input.style.cssText =
-    'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;';
+  input.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;';
 
   // Assemble the form field
   container.append(labelElement, input);

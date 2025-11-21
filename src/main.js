@@ -24,12 +24,7 @@ import * as HTTP from './utils/http.js';
 import * as DOM from './utils/dom.js';
 
 /**
- * Plugin state object to track initialization and user context.
- * @type {Object}
- * @property {boolean} initialized - Whether the plugin has been initialized
- * @property {string|null} accessToken - The current Facebook access token
- * @property {string|null} accountId - The current Ad Account ID
- * @property {boolean} isPageAuth - Whether the user is authenticated as a page
+ * Plugin state
  */
 const PluginState = {
   initialized: false,
@@ -41,28 +36,24 @@ const PluginState = {
 };
 
 /**
- * Check if current page is a valid path for plugin activation.
- * Compares window.location.pathname against CONFIG.VALID_PATHS.
- * @returns {boolean} True if the current path is valid for plugin activation
+ * Check if current page is a valid path for plugin activation
+ * @returns {boolean}
  */
 function isValidPath() {
-  return CONFIG.VALID_PATHS.some(path => window.location.pathname === path);
+  return CONFIG.VALID_PATHS.some(path =>
+    window.location.pathname === path
+  );
 }
 
 /**
- * Initialize the plugin.
- * Checks path validity, retrieves access token, initializes UI,
- * sets up keyboard shortcuts, and loads initial data.
- * @returns {void}
+ * Initialize the plugin
  */
 function initialize() {
   console.log(`Facebook Ads Manager Plugin v${CONFIG.VERSION}`);
 
   // Check if we're on a valid page
   if (!isValidPath()) {
-    console.log(
-      'Not on ads manager page. Plugin will remain inactive until you navigate to ads manager.'
-    );
+    console.log('Not on ads manager page. Plugin will remain inactive until you navigate to ads manager.');
     return;
   }
 
@@ -97,13 +88,10 @@ function initialize() {
 }
 
 /**
- * Setup keyboard shortcuts for the plugin.
- * - ESC: Close popup
- * - Ctrl+Shift+F: Toggle popup
- * @returns {void}
+ * Setup keyboard shortcuts
  */
 function setupKeyboardShortcuts() {
-  document.addEventListener('keydown', function (evt) {
+  document.addEventListener('keydown', function(evt) {
     // ESC key - close popup
     if (evt.key === 'Escape') {
       Popup.mainclose();
@@ -118,9 +106,7 @@ function setupKeyboardShortcuts() {
 }
 
 /**
- * Load initial data and populate UI.
- * Fetches ad account details and displays them in the popup.
- * @returns {Promise<void>}
+ * Load initial data and populate UI
  */
 async function loadInitialData() {
   try {
@@ -145,24 +131,22 @@ async function loadInitialData() {
 
     // Show plugin popup
     Popup.showPluginPopup();
+
   } catch (error) {
     console.error('Error loading initial data:', error);
   }
 }
 
 /**
- * Display account information in the popup.
- * Creates DOM elements to show account details and payment method.
- * @param {Object} accountData - Account data object from API
- * @returns {void}
+ * Display account information in the popup
+ * @param {Object} accountData - Account data from API
  */
 function displayAccountInfo(accountData) {
   const currencySymbol = Settings.getCurrencySymbol(accountData.currency);
 
   // Create account info container (XSS-safe using DOM methods)
   const infoContainer = document.createElement('div');
-  infoContainer.style.cssText =
-    'padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 10px;';
+  infoContainer.style.cssText = 'padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 10px;';
 
   // Create title
   const title = document.createElement('h4');
@@ -211,15 +195,13 @@ function displayAccountInfo(accountData) {
     const cardStrong = document.createElement('strong');
     cardStrong.textContent = 'Card: ';
 
-    const cardText = document.createTextNode(
-      accountData.funding_source_details.display_string || 'No card on file'
-    );
+    const cardText = document.createTextNode(accountData.funding_source_details.display_string || 'No card on file');
 
     const addLink = document.createElement('a');
     addLink.href = '#';
     addLink.setAttribute('data-action', 'add-credit-card');
     addLink.textContent = 'add';
-    addLink.addEventListener('click', e => {
+    addLink.addEventListener('click', (e) => {
       e.preventDefault();
       // Pass context needed for mutations
       CreditCard.showAddCreditCardForm(PluginState);
@@ -233,18 +215,15 @@ function displayAccountInfo(accountData) {
 }
 
 /**
- * Expose API to window object for backward compatibility.
+ * Expose API to window object for backward compatibility
  * WARNING: This function exposes internal APIs to the global namespace.
  * Only use this if you need backward compatibility with legacy code.
  * It is NOT called automatically to prevent namespace pollution.
  *
  * To use: Call window.FBACCPlugin.exposeGlobalAPI() manually if needed.
- * @returns {void}
  */
 function exposeGlobalAPI() {
-  console.warn(
-    'FBACCPlugin: exposeGlobalAPI() is deprecated and pollutes the global namespace. Use the FBACCPlugin namespace instead.'
-  );
+  console.warn('FBACCPlugin: exposeGlobalAPI() is deprecated and pollutes the global namespace. Use the FBACCPlugin namespace instead.');
 
   // Core
   window.PluginState = PluginState;
@@ -302,10 +281,9 @@ function exposeGlobalAPI() {
 }
 
 /**
- * Main execution IIFE.
- * Sets up the namespaced global API 'FBACCPlugin' and triggers initialization on DOMContentLoaded.
+ * Main execution
  */
-(function () {
+(function() {
   console.log('Facebook Ads Manager Plugin loading...');
 
   // Expose a single namespaced API instead of polluting global namespace
@@ -362,4 +340,8 @@ function exposeGlobalAPI() {
   }
 })();
 
-export { PluginState, initialize, exposeGlobalAPI };
+export {
+  PluginState,
+  initialize,
+  exposeGlobalAPI
+};
