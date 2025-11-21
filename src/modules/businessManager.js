@@ -8,10 +8,14 @@ import { showPopup, hidePopup } from '../utils/dom.js';
 import { CONFIG } from '../core/config.js';
 
 /**
- * Add Business Manager
+ * Create a new Business Manager.
  * @param {string} bmName - Business Manager name
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of BM creation
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function addBusinessManager(bmName, accessToken) {
   try {
@@ -36,7 +40,6 @@ export async function addBusinessManager(bmName, accessToken) {
       message: 'Business Manager created successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error creating Business Manager:', error);
     return {
@@ -48,12 +51,16 @@ export async function addBusinessManager(bmName, accessToken) {
 }
 
 /**
- * Add user to Business Manager
+ * Add a user to a Business Manager.
  * @param {string} bmId - Business Manager ID
  * @param {string} userId - User ID to add
- * @param {string} role - User role (ADMIN, EMPLOYEE, etc.)
+ * @param {string} role - User role (e.g., 'ADMIN', 'EMPLOYEE')
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of adding user
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function addUserToBusinessManager(bmId, userId, role, accessToken) {
   try {
@@ -78,7 +85,6 @@ export async function addUserToBusinessManager(bmId, userId, role, accessToken) 
       message: 'User added to Business Manager successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error adding user to Business Manager:', error);
     return {
@@ -90,11 +96,15 @@ export async function addUserToBusinessManager(bmId, userId, role, accessToken) 
 }
 
 /**
- * Add ad account to Business Manager
+ * Add an ad account to a Business Manager (claim ownership).
  * @param {string} bmId - Business Manager ID
  * @param {string} adAccountId - Ad account ID to add
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of adding account
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function addAdAccountToBusinessManager(bmId, adAccountId, accessToken) {
   try {
@@ -119,7 +129,6 @@ export async function addAdAccountToBusinessManager(bmId, adAccountId, accessTok
       message: 'Ad account added to Business Manager successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error adding ad account to Business Manager:', error);
     return {
@@ -131,11 +140,15 @@ export async function addAdAccountToBusinessManager(bmId, adAccountId, accessTok
 }
 
 /**
- * Request ad account access to Business Manager
+ * Request access to an ad account on behalf of a Business Manager.
  * @param {string} bmId - Business Manager ID
- * @param {string} adAccountId - Ad account ID to request
+ * @param {string} adAccountId - Ad account ID to request access to
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of access request
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
   try {
@@ -160,7 +173,6 @@ export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
       message: 'Ad account access requested successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error requesting ad account access:', error);
     return {
@@ -172,7 +184,8 @@ export async function requestAdAccountAccess(bmId, adAccountId, accessToken) {
 }
 
 /**
- * Show add Business Manager form
+ * Show the "Add Business Manager" form popup.
+ * @returns {void}
  */
 export function showAddBusinessManagerForm() {
   // Create form container using DOM methods (XSS-safe)
@@ -202,13 +215,15 @@ export function showAddBusinessManagerForm() {
   const cancelButton = document.createElement('button');
   cancelButton.setAttribute('data-action', 'cancel');
   cancelButton.textContent = 'Cancel';
-  cancelButton.style.cssText = 'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
+  cancelButton.style.cssText =
+    'padding: 10px 20px; margin-right: 10px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;';
   cancelButton.addEventListener('click', hidePopup);
 
   const createButton = document.createElement('button');
   createButton.setAttribute('data-action', 'submit');
   createButton.textContent = 'Create BM';
-  createButton.style.cssText = 'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
+  createButton.style.cssText =
+    'padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 4px; cursor: pointer;';
   createButton.addEventListener('click', processAddBusinessManager);
 
   buttonContainer.append(cancelButton, createButton);
@@ -220,7 +235,9 @@ export function showAddBusinessManagerForm() {
 }
 
 /**
- * Process add Business Manager form submission
+ * Process the "Add Business Manager" form submission.
+ * Validates input and calls addBusinessManager.
+ * @returns {Promise<void>}
  */
 export async function processAddBusinessManager() {
   const bmNameInput = document.getElementById('bm-name');

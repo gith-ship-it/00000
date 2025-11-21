@@ -4,21 +4,23 @@
  */
 
 /**
- * Create and show a modal/popup
- * @param {string} title - Popup title (will be safely escaped)
+ * Create and show a modal/popup.
+ * Creates the DOM structure for a popup with a title, content, and close button.
+ * Handles overlay creation and event listeners.
+ *
+ * @param {string} title - Popup title (will be safely escaped using textContent)
  * @param {HTMLElement|Node} content - DOM element or node for popup content
- * @param {Object} options - Popup options
- * @returns {HTMLElement} The popup element for direct event listener attachment
+ * @param {Object} [options={}] - Popup options
+ * @param {string} [options.width='600px'] - CSS width of the popup
+ * @param {string} [options.height='auto'] - CSS height of the popup (unused in implementation but kept for API consistency)
+ * @param {string} [options.className='fb-plugin-popup'] - CSS class for the popup container
+ * @returns {HTMLElement} The popup element for direct event listener attachment if needed
  *
  * SECURITY: This function only accepts DOM elements/nodes for content to prevent XSS attacks.
  * Build your content using createElement() and DOM methods, not HTML strings.
  */
 export function showPopup(title, content, options = {}) {
-  const {
-    width = '600px',
-    height = 'auto',
-    className = 'fb-plugin-popup'
-  } = options;
+  const { width = '600px', height = 'auto', className = 'fb-plugin-popup' } = options;
 
   // Remove existing popup if any
   hidePopup();
@@ -47,7 +49,8 @@ export function showPopup(title, content, options = {}) {
 
   // Create header container
   const headerContainer = document.createElement('div');
-  headerContainer.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;';
+  headerContainer.style.cssText =
+    'display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;';
 
   // Create title element (use textContent for XSS protection)
   const titleElement = document.createElement('h3');
@@ -67,7 +70,9 @@ export function showPopup(title, content, options = {}) {
   if (content instanceof Node) {
     contentContainer.appendChild(content);
   } else {
-    console.error('showPopup: content must be a DOM Node for security. HTML strings are not supported.');
+    console.error(
+      'showPopup: content must be a DOM Node for security. HTML strings are not supported.'
+    );
     const errorMsg = document.createElement('p');
     errorMsg.textContent = 'Error: Invalid content provided';
     errorMsg.style.color = 'red';
@@ -102,7 +107,9 @@ export function showPopup(title, content, options = {}) {
 }
 
 /**
- * Hide/close the popup
+ * Hide/close the currently open popup.
+ * Removes the popup element and overlay from the DOM.
+ * @returns {void}
  */
 export function hidePopup() {
   const popup = document.getElementById('fb-plugin-popup');
@@ -113,7 +120,10 @@ export function hidePopup() {
 }
 
 /**
- * Toggle popup visibility
+ * Toggle popup visibility.
+ * If a popup is open, close it. (Note: logic for opening is not inherent here as opening requires content).
+ * This effectively acts as a "close if open" in its current implementation unless extended.
+ * @returns {void}
  */
 export function togglePopup() {
   const popup = document.getElementById('fb-plugin-popup');

@@ -8,6 +8,7 @@ import { CONFIG } from '../core/config.js';
 
 /**
  * Basic ad account fields that should be available to most access tokens
+ * @constant {Array<string>}
  */
 const BASIC_AD_ACCOUNT_FIELDS = [
   'id',
@@ -20,18 +21,20 @@ const BASIC_AD_ACCOUNT_FIELDS = [
 
 /**
  * Sensitive ad account fields that require ads_management or business_management permissions
+ * @constant {Array<string>}
  */
-const SENSITIVE_AD_ACCOUNT_FIELDS = [
-  'amount_spent',
-  'balance',
-  'funding_source_details'
-];
+const SENSITIVE_AD_ACCOUNT_FIELDS = ['amount_spent', 'balance', 'funding_source_details'];
 
 /**
- * Appeal/request review for ad account
- * @param {string} accountId - Ad account ID
- * @param {string} accessToken - Facebook access token
+ * Appeal/request review for ad account.
+ * Submits a client mutation to appeal an ad account restriction.
+ * @param {string} accountId - Ad account ID (e.g., '123456789')
+ * @param {string} accessToken - Facebook access token with necessary permissions
  * @returns {Promise<Object>} Result of the appeal
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function appealAdAccount(accountId, accessToken) {
   try {
@@ -41,7 +44,7 @@ export async function appealAdAccount(accountId, accessToken) {
         actor_id: accountId,
         ad_account_id: accountId,
         ids_issue_ent_id: '1',
-        appeal_comment: "I'm not sure which policy was violated.",
+        appeal_comment: 'I\'m not sure which policy was violated.',
         callsite: 'ACCOUNT_QUALITY'
       }
     };
@@ -58,7 +61,6 @@ export async function appealAdAccount(accountId, accessToken) {
       message: 'Ad account appeal submitted successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error appealing ad account:', error);
     return {
@@ -70,10 +72,15 @@ export async function appealAdAccount(accountId, accessToken) {
 }
 
 /**
- * Delete ad account
+ * Delete ad account.
+ * Submits a client mutation to delete an ad account.
  * @param {string} adAccountId - Ad account ID to delete
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of deletion
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function deleteAdAccount(adAccountId, accessToken) {
   try {
@@ -97,7 +104,6 @@ export async function deleteAdAccount(adAccountId, accessToken) {
       message: 'Ad account deleted successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error deleting ad account:', error);
     return {
@@ -109,11 +115,15 @@ export async function deleteAdAccount(adAccountId, accessToken) {
 }
 
 /**
- * Remove ad account from user
+ * Remove ad account access from a user.
  * @param {string} adAccountId - Ad account ID
- * @param {string} userId - User ID to remove
+ * @param {string} userId - User ID to remove from the ad account
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Result of removal
+ * @property {boolean} success - Whether the operation was successful
+ * @property {string} message - Result message
+ * @property {Object} [data] - Response data from GraphQL
+ * @property {Object} [error] - Error details if failed
  */
 export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
   try {
@@ -137,7 +147,6 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
       message: 'Ad account access removed successfully',
       data: response
     };
-
   } catch (error) {
     console.error('Error removing ad account access:', error);
     return {
@@ -149,19 +158,20 @@ export async function removeAdAccountAccess(adAccountId, userId, accessToken) {
 }
 
 /**
- * Get ad account details
+ * Get ad account details including status, currency, and funding source.
  * @param {string} accountId - Ad account ID
  * @param {string} accessToken - Facebook access token
  * @returns {Promise<Object>} Account details
+ * @property {boolean} success - Whether the operation was successful
+ * @property {Object} [data] - Account details object from Graph API
+ * @property {string} [message] - Error message if failed
+ * @property {Object} [error] - Error details if failed
  */
 export async function getAdAccountDetails(accountId, accessToken) {
   try {
     // Combine all fields into a single request as in the original implementation
     // The API v18.0 works better with all fields requested together
-    const allFields = [
-      ...BASIC_AD_ACCOUNT_FIELDS,
-      ...SENSITIVE_AD_ACCOUNT_FIELDS
-    ];
+    const allFields = [...BASIC_AD_ACCOUNT_FIELDS, ...SENSITIVE_AD_ACCOUNT_FIELDS];
 
     const data = await graphAPIRequest(`act_${accountId}`, {
       params: {
@@ -172,15 +182,13 @@ export async function getAdAccountDetails(accountId, accessToken) {
 
     // Check if any sensitive fields are missing from the response
     // Facebook API omits fields when the token lacks permissions, rather than failing
-    const missingSensitiveFields = SENSITIVE_AD_ACCOUNT_FIELDS.filter(
-      field => !(field in data)
-    );
+    const missingSensitiveFields = SENSITIVE_AD_ACCOUNT_FIELDS.filter(field => !(field in data));
 
     if (missingSensitiveFields.length > 0) {
       console.warn(
         'Could not fetch one or more sensitive account fields. ' +
-        'This is expected if the access token lacks permissions. ' +
-        `Missing fields: ${missingSensitiveFields.join(', ')}`
+          'This is expected if the access token lacks permissions. ' +
+          `Missing fields: ${missingSensitiveFields.join(', ')}`
       );
     }
 
@@ -188,7 +196,6 @@ export async function getAdAccountDetails(accountId, accessToken) {
       success: true,
       data
     };
-
   } catch (error) {
     console.error('Error getting ad account details:', error);
     return {
